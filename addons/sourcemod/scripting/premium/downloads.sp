@@ -1,5 +1,3 @@
-#include <sdktools_stringtables>
-
 stock void InitDownloads() {
     char szPath[PLATFORM_MAX_PATH], szDownloadPath[PLATFORM_MAX_PATH];
     BuildPath(Path_SM, szPath, sizeof szPath, DOWNLOADS_PATH);
@@ -35,7 +33,7 @@ stock FileType GetFileType(const char[] szPath) {
 
 stock void DownloadFile(const char[] szPath) {
     if(FileExists(szPath)) AddFileToDownloadsTable(szPath);
-    else LogError("[Premium::DownloadFile] File path '%s' not found!", szPath);
+    else LogError("File path '%s' not found!", szPath);
 }
 
 stock void DownloadDirectory(const char[] szPath) {

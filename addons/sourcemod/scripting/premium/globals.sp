@@ -6,7 +6,7 @@
 #define PLUGIN_NAME "[Premium] Core"
 #define PLUGIN_AUTHOR "xyligan"
 #define PLUGIN_DESCRIPTION "Ядро для выдачи привилегированного доступа игрокам"
-#define PLUGIN_VERSION "1.1.1"
+#define PLUGIN_VERSION "1.1.2"
 #define PLUGIN_URL "https://csdevs.net"
 
 #define CHARSET "utf8mb4_general_ci"
@@ -14,7 +14,6 @@
 #define LOGS_PATH "logs/premium.log"
 #define DEBUG_PATH "logs/premium.debug.log"
 
-#define ROUNDS_CONFIG_PATH "configs/premium/core/first_rounds.cfg"
 #define DOWNLOADS_PATH "configs/premium/core/downloads.txt"
 #define CONFIG_PATH "configs/premium/core/settings.cfg"
 #define GROUPS_PATH "configs/premium/core/groups.cfg"
@@ -35,6 +34,7 @@ enum Forwards {
     OnClientJoin,
     OnClientLeave,
     OnClientSpawn,
+    OnConfigsLoaded,
     OnFeatureRegistered,
     OnFeatureUnregistered
 }

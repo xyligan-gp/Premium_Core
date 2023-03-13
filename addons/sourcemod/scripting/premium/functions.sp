@@ -1,6 +1,3 @@
-#include <csgo_colors>
-#include <morecolors>
-
 stock void InitCore() {
     BuildPath(Path_SM, g_szLogsFile, sizeof g_szLogsFile, LOGS_PATH);
 
@@ -11,7 +8,7 @@ stock void InitEngine() {
     g_hEngine = GetEngineVersion();
 
     if(g_hEngine != Engine_SourceSDK2006 && g_hEngine != Engine_CSS && g_hEngine != Engine_CSGO)
-        SetFailState("[Premium::InitEngine] The current plugin supports the following games: CS:S v34, CS:S OB and CS:GO!");
+        SetFailState("Current plugin supports the following games: CS:S v34, CS:S OrangeBox and CS:GO!");
 }
 
 stock void InitConfig(bool bIsNotify = false, int iClient = 0) {
@@ -22,8 +19,8 @@ stock void InitConfig(bool bIsNotify = false, int iClient = 0) {
     
     g_hConfigs[MAIN] = CreateKeyValues("Premium");
 
-    if(!g_hConfigs[MAIN].ImportFromFile(g_szConfig))
-        SetFailState("[Premium::InitConfig] Failed load config file: %s", g_szConfig);
+    if(!FileToKeyValues(g_hConfigs[MAIN], g_szConfig))
+        SetFailState("Failed to load the main configuration file of the plugin: %s", g_szConfig);
     
     char szFlags[16];
     KvGetString(g_hConfigs[MAIN], "AccessAdminFlags", szFlags, sizeof szFlags, "z");
@@ -98,8 +95,8 @@ stock void LoadPremiumGroups() {
     
     g_hConfigs[GROUPS] = CreateKeyValues("Groups");
 
-    if(!g_hConfigs[GROUPS].ImportFromFile(szPath))
-        SetFailState("[Premium::LoadPremiumGroups] Failed load config file: %s", szPath);
+    if(!FileToKeyValues(g_hConfigs[GROUPS], szPath))
+        SetFailState("Failed to load configuration file with groups: %s", szPath);
     
     KvRewind(g_hConfigs[GROUPS]);
 
@@ -168,36 +165,21 @@ stock void ClearClientData(int iClient) {
         delete g_hClientData[iClient];
 }
 
-stock void PrintMap(Handle hMap) {
-    Handle hSnapshot = CreateTrieSnapshot(hMap);
-    int iFeaturesCount = TrieSnapshotLength(hSnapshot);
-
-    for(int i = 0; i < iFeaturesCount; i++) {
-        char szKey[PLATFORM_MAX_PATH];
-        GetTrieSnapshotKey(hSnapshot, i, szKey, sizeof szKey);
-        
-        char szValue[PLATFORM_MAX_PATH];
-        GetTrieString(hMap, szKey, szValue, sizeof szValue);
-
-        PrintToServer("Key: %s => Value: %s", szKey, szValue);
-    }
-}
-
 stock bool IsValidClientFeature(int iClient, const char[] szFeature) {
     char szAuth[32], szEscapedFeature[64], szQuery[PLATFORM_MAX_PATH];
     GetClientAuthId(iClient, AuthId_Steam2, szAuth, sizeof szAuth);
 
-    g_hDatabase.Escape(szFeature, szEscapedFeature, sizeof szEscapedFeature);
+    SQL_EscapeString(g_hDatabase, szFeature, szEscapedFeature, sizeof szEscapedFeature);
     FormatEx(szQuery, sizeof szQuery, "SELECT `feature_status` FROM `%s_settings` WHERE `feature_id` = '%s' AND `auth` = '%s'", g_szTablePrefix, szFeature, szAuth);
     
     SQL_LockDatabase(g_hDatabase);
     DBResultSet hResults = SQL_Query(g_hDatabase, szQuery);
     SQL_UnlockDatabase(g_hDatabase);
 
-    bool bIsValid = SQL_FetchRow(hResults);
+    bool IsValid = SQL_FetchRow(hResults);
     CloseHandle(hResults);
 
-    return bIsValid;
+    return IsValid;
 }
 
 stock int SearchFeatureParent(const char[] szFeature, char[] szBuffer, int iMaxLength) {
@@ -248,6 +230,8 @@ stock int GetClientGroup(const char[] szAuth, char[] szBuffer, int iMaxLength) {
 
     if(SQL_FetchRow(hResults)) SQL_FetchString(hResults, 0, szBuffer, iMaxLength);
     else strcopy(szBuffer, iMaxLength, "premium1");
+
+    CloseHandle(hResults);
 
     return strlen(szBuffer);
 }
@@ -303,6 +287,8 @@ stock int GetPremiumClientName(char[] szAuth, char[] szBuffer, int iMaxLength) {
 
     if(SQL_FetchRow(hResults)) SQL_FetchString(hResults, 0, szBuffer, iMaxLength);
     else strcopy(szBuffer, iMaxLength, "Unknown");
+
+    CloseHandle(hResults);
 
     return strlen(szBuffer);
 }
@@ -384,13 +370,13 @@ stock bool CORE_GiveClientAccess(int iTarget, const char[] szGroup, int iAdmin =
         strcopy(szAuth[0], sizeof szAuth[], "SERVER_ID");
     }
 
-    g_hDatabase.Escape(szName[0], szEscapedName[0], sizeof szEscapedName[]);
+    SQL_EscapeString(g_hDatabase, szName[0], szEscapedName[0], sizeof szEscapedName[]);
 
     if(CORE_IsValidClient(iTarget)) {
         GetClientName(iTarget, szName[1], sizeof szName[]);
         GetClientAuthId(iTarget, AuthId_Steam2, szAuth[1], sizeof szAuth[]);
 
-        g_hDatabase.Escape(szName[1], szEscapedName[1], sizeof szEscapedName[]);
+        SQL_EscapeString(g_hDatabase, szName[1], szEscapedName[1], sizeof szEscapedName[]);
         FormatEx(szQuery, sizeof szQuery, "INSERT INTO `%s_users` (`group`, `player_name`, `player_auth`, `admin_name`, `admin_auth`, `timestamp`, `jointime`, `expires`) VALUES('%s', '%s', '%s', '%s', '%s', '%i', '%i', '%i')", g_szTablePrefix, szGroup, szEscapedName[1], szAuth[1], szEscapedName[0], szAuth[0], GetTime(), GetTime(), iTime == 0 ? iTime : GetTime() + iTime);
 
         SQL_LockDatabase(g_hDatabase);
@@ -419,7 +405,7 @@ stock bool CORE_GiveClientAccess(int iTarget, const char[] szGroup, int iAdmin =
         API_CreateForward_OnAddAccess(iTarget, iAdmin, szGroup, iTime);
 
         return true;
-    }else LogError("[Premium::CORE_GiveClientAccess] Cannot find client with index '%i'!", iTarget);
+    }else LogError("Cannot find client with index '%i'!", iTarget);
 
     return false;
 }
@@ -481,8 +467,8 @@ stock int CORE_FormatAccessTime(int iClient, int iTime, char[] szBuffer, int iMa
     
     g_hConfigs[TIMES] = CreateKeyValues("Times");
 
-    if(!g_hConfigs[TIMES].ImportFromFile(szPath))
-        SetFailState("[Premium::CORE_FormatAccessTime] Failed load config file: %s", szPath);
+    if(!FileToKeyValues(g_hClientData[TIMES], szPath))
+        SetFailState("Failed to load configuration file with times: %s", szPath);
 
     KvRewind(g_hConfigs[TIMES]);
 
@@ -581,7 +567,7 @@ stock bool CORE_GetClientFeatureStatus(int iClient, const char[] szFeature) {
     char szAuth[32], szEscapedFeature[64], szQuery[PLATFORM_MAX_PATH];
     GetClientAuthId(iClient, AuthId_Steam2, szAuth, sizeof szAuth);
 
-    g_hDatabase.Escape(szFeature, szEscapedFeature, sizeof szEscapedFeature);
+    SQL_EscapeString(g_hDatabase, szFeature, szEscapedFeature, sizeof szEscapedFeature);
     FormatEx(szQuery, sizeof szQuery, "SELECT `feature_status` FROM `%s_settings` WHERE `feature_id` = '%s' AND `auth` = '%s'", g_szTablePrefix, szEscapedFeature, szAuth);
     
     SQL_LockDatabase(g_hDatabase);
@@ -596,16 +582,16 @@ stock bool CORE_GetClientFeatureStatus(int iClient, const char[] szFeature) {
     return bIsEnabled;
 }
 
-stock bool CORE_SetClientFeatureStatus(int iClient, const char[] szFeature, bool bIsEnabled) {
+stock void CORE_SetClientFeatureStatus(int iClient, const char[] szFeature, bool bIsEnabled) {
     char szAuth[32], szEscapedFeature[64], szQuery[PLATFORM_MAX_PATH];
     GetClientAuthId(iClient, AuthId_Steam2, szAuth, sizeof szAuth);
 
-    g_hDatabase.Escape(szFeature, szEscapedFeature, sizeof szEscapedFeature);
+    SQL_EscapeString(g_hDatabase, szFeature, szEscapedFeature, sizeof szEscapedFeature);
 
     if(IsValidClientFeature(iClient, szFeature)) FormatEx(szQuery, sizeof szQuery, "UPDATE `%s_settings` SET `feature_status` = '%i' WHERE `feature_id` = '%s' AND `auth` = '%s'", g_szTablePrefix, view_as<int>(bIsEnabled), szFeature, szAuth);
     else FormatEx(szQuery, sizeof szQuery, "INSERT INTO `%s_settings` (`auth`, `feature_id`, `feature_status`) VALUES ('%s', '%s', '%i')", g_szTablePrefix, szAuth, szFeature, view_as<int>(bIsEnabled));
     
-    return SQL_FastQuery(g_hDatabase, szQuery);
+    g_hDatabase.Query(SQL_CallBack_ErrorHandle, szQuery);
 }
 
 stock int CORE_GetClientExpires(int iClient) {
@@ -640,6 +626,8 @@ stock int CORE_GetClientGroup(int iClient, char[] szBuffer, int iMaxLength) {
 
     if(SQL_FetchRow(hResults)) SQL_FetchString(hResults, 0, szBuffer, iMaxLength);
     else strcopy(szBuffer, iMaxLength, "premium1");
+
+    CloseHandle(hResults);
 
     return strlen(szBuffer);
 }
@@ -736,7 +724,7 @@ stock bool CORE_IsAllowedFirstRound(const char[] szFeature) {
     g_hConfigs[MAIN] = CreateKeyValues("Premium");
 
     if(!FileToKeyValues(g_hConfigs[MAIN], szPath))
-        SetFailState("[Premium::CORE_IsAllowedFirstRound] Failed load config file: %s", szPath);
+        SetFailState("Failed to load the main configuration file of the plugin: %s", szPath);
     
     KvRewind(g_hConfigs[MAIN]);
 
@@ -777,7 +765,7 @@ stock bool CORE_IsAllowedFeature(const char[] szFeature) {
     g_hConfigs[MAIN] = CreateKeyValues("Premium");
 
     if(!FileToKeyValues(g_hConfigs[MAIN], szPath))
-        SetFailState("[Premium::CORE_IsAllowedFeature] Failed load config file: %s", szPath);
+        SetFailState("Failed to load the main configuration file of the plugin: %s", szPath);
     
     KvRewind(g_hConfigs[MAIN]);
 
@@ -792,7 +780,7 @@ stock bool CORE_IsAllowedFeature(const char[] szFeature) {
         int iMapsCount = ExplodeString(szMapsList, ";", szMaps, sizeof szMaps, sizeof szMaps[]);
 
         for(int i = 0; i < iMapsCount; i++) {
-            if(StrEqual(szMaps[i], szMap)/* && g_bIsFirstRound */) {
+            if(StrEqual(szMaps[i], szMap) /* && g_bIsFirstRound */ ) {
                 bIsAllowed = false;
 
                 break;
@@ -801,4 +789,30 @@ stock bool CORE_IsAllowedFeature(const char[] szFeature) {
     }
 
     return bIsAllowed;
+}
+
+stock bool CORE_IsValidGroup(const char[] szGroup) {
+    StringMap hGroupFeatures;
+    GetTrieValue(g_hGroups, szGroup, hGroupFeatures);
+
+    return hGroupFeatures != INVALID_HANDLE;
+}
+
+stock int CORE_GetFeatureValue(int iClient, char[] szFeature, char[] szBuffer, int iMaxLength) {
+    int iBufLength = 0;
+    
+    if(CORE_IsValidClient(iClient)) {
+        char szGroup[GROUP_MAX_LENGTH];
+        CORE_GetClientGroup(iClient, szGroup, sizeof szGroup);
+
+        StringMap hFeatures;
+        GetTrieValue(g_hGroups, szGroup, hFeatures);
+
+        if(hFeatures != INVALID_HANDLE) {
+            GetTrieString(hFeatures, szFeature, szBuffer, iMaxLength);
+            iBufLength = strlen(szBuffer);
+        }
+    }
+
+    return iBufLength;
 }

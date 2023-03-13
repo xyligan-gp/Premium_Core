@@ -29,10 +29,10 @@ stock void InitDatabase() {
         `feature_id` varchar(32), \
         `feature_status` INTEGER NOT NULL default 1);", g_szTablePrefix);
     
-    if(SQL_CheckConfig("premium"))
-        g_hDatabase = SQL_Connect("premium", true, szError, sizeof szError);
+    if(SQL_CheckConfig("premium_core"))
+        g_hDatabase = SQL_Connect("premium_core", true, szError, sizeof szError);
     else
-        g_hDatabase = SQLite_UseDatabase("Premium", szError, sizeof szError);
+        g_hDatabase = SQLite_UseDatabase("premium_core", szError, sizeof szError);
     
     g_hDatabase.Query(SQL_CallBack_CreateUsersTable, CORE_GetDatabaseType() ? szQuery[0] : szQuery[1]);
     g_hDatabase.Query(SQL_CallBack_CreateSettingsTable, CORE_GetDatabaseType() ? szQuery[2] : szQuery[3]);
@@ -40,7 +40,7 @@ stock void InitDatabase() {
 
 public void SQL_CallBack_CreateUsersTable(Database hDatabase, DBResultSet hResults, const char[] szError, any data) {
     if(!hResults && strlen(szError)) {
-        LogError("[Premium::InitDatabase] SQL_CallBack_CreateUsersTable - error while working with data (%s)", szError);
+        LogError("SQL_CallBack_CreateUsersTable - error while working with data (%s)", szError);
         CORE_Debug(QUERY, "SQL_CallBack_CreateUsersTable - An error occurred while executing the query - %s", szError);
 
         return;
@@ -70,7 +70,7 @@ public void SQL_CallBack_CreateUsersTable(Database hDatabase, DBResultSet hResul
 
 public void SQL_CallBack_CreateSettingsTable(Database hDatabase, DBResultSet hResults, const char[] szError, any data) {
     if(!hResults && strlen(szError)) {
-        LogError("[Premium::InitDatabase] SQL_CallBack_CreateSettingsTable - error while working with data (%s)", szError);
+        LogError("SQL_CallBack_CreateSettingsTable - error while working with data (%s)", szError);
         CORE_Debug(QUERY, "SQL_CallBack_CreateSettingsTable - An error occurred while executing the query - %s", szError);
 
         return;
@@ -94,7 +94,7 @@ public void SQL_CallBack_CreateSettingsTable(Database hDatabase, DBResultSet hRe
 
 public void SQL_CallBack_FetchPremiumUsers(Database hDatabase, DBResultSet hResults, const char[] szError, any data) {
     if(!hResults && strlen(szError)) {
-        LogError("[Premium] SQL_CallBack_FetchPremiumUsers - error while working with data (%s)", szError);
+        LogError("SQL_CallBack_FetchPremiumUsers - error while working with data (%s)", szError);
         CORE_Debug(QUERY, "SQL_CallBack_FetchPremiumUsers - An error occurred while executing the query - %s", szError);
 
         return;
@@ -121,7 +121,7 @@ public void SQL_CallBack_FetchPremiumUsers(Database hDatabase, DBResultSet hResu
 
 public void SQL_CallBack_ShowPremiumClients(Database hDatabase, DBResultSet hResults, const char[] szError, int iUserId) {
     if(!hResults && strlen(szError)) {
-        LogError("[Premium] SQL_CallBack_ShowPremiumClients - error while working with data (%s)", szError);
+        LogError("SQL_CallBack_ShowPremiumClients - error while working with data (%s)", szError);
         CORE_Debug(QUERY, "SQL_CallBack_ShowPremiumClients - An error occurred while executing the query - %s", szError);
 
         return;
@@ -157,7 +157,7 @@ public void SQL_CallBack_ShowPremiumClients(Database hDatabase, DBResultSet hRes
 
 public void SQL_CallBack_ShowClientInfo(Database hDatabase, DBResultSet hResults, const char[] szError, int iUserId) {
     if(!hResults && strlen(szError)) {
-        LogError("[Premium] SQL_CallBack_ShowClientInfo - error while working with data (%s)", szError);
+        LogError("SQL_CallBack_ShowClientInfo - error while working with data (%s)", szError);
         CORE_Debug(QUERY, "SQL_CallBack_ShowClientInfo - An error occurred while executing the query - %s", szError);
 
         return;
@@ -216,7 +216,7 @@ public void SQL_CallBack_ShowClientInfo(Database hDatabase, DBResultSet hResults
 
 public void SQL_CallBack_ErrorHandle(Database hDatabase, DBResultSet hResults, const char[] szError, any data) {
     if(!hResults && strlen(szError)) {
-        LogError("[Premium] SQL_CallBack_ErrorHandle - error while working with data (%s)", szError);
+        LogError("SQL_CallBack_ErrorHandle - error while working with data (%s)", szError);
         CORE_Debug(QUERY, "SQL_CallBack_ErrorHandle - An error occurred while executing the query - %s", szError);
     }
 }

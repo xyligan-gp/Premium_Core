@@ -1,11 +1,17 @@
 #pragma newdecls required
 
-#include <sourcemod>
-#include <adminmenu>
-
 // Загрузка inc
 #include <premium>
 
+// Загрузка библиотек
+#include <sourcemod>
+#include <adminmenu>
+#include <morecolors>
+#include <csgo_colors>
+#include <sdktools_functions>
+#include <sdktools_stringtables>
+
+// Загрузка файлов плагина
 #include "premium/globals.sp"
 #include "premium/downloads.sp"
 #include "premium/database.sp"
@@ -14,7 +20,7 @@
 #include "premium/events.sp"
 #include "premium/functions.sp"
 
-// Загрузка API
+// Загрузка API плагина
 #include "premium/API.sp"
 
 public Plugin myinfo = {
@@ -59,8 +65,9 @@ public void OnMapStart() {
     InitConfig();
     InitDownloads();
     InitComponents();
-
     LoadPremiumGroups();
+
+    API_CreateForward_OnConfigsLoaded();
 }
 
 public void OnMapEnd() {

@@ -72,8 +72,10 @@ public int CallBack_PremiumMenu(Menu hMenu, MenuAction mAction, int iClient, int
                 PremiumFeatureType iType = ReadPackCell(hPack);
 
                 switch(iType) {
-                    case STATUS:
-                        FormatEx(szDisplay, sizeof szDisplay, "%T [%s]", szItem, iClient, CORE_GetClientFeatureStatus(iClient, szItem) ? "+" : "-");
+                    case STATUS: {
+                        if(!TranslationPhraseExists(szItem)) FormatEx(szDisplay, sizeof szDisplay, "%s [%s]", szItem, CORE_GetClientFeatureStatus(iClient, szItem) ? "+" : "-");
+                        else FormatEx(szDisplay, sizeof szDisplay, "%T [%s]", szItem, iClient, CORE_GetClientFeatureStatus(iClient, szItem) ? "+" : "-");
+                    }
                     
                     case SELECTABLE:
                         FormatEx(szDisplay, sizeof szDisplay, "%T", szItem, iClient);
@@ -140,7 +142,7 @@ stock void CORE_ShowMenu(int iClient, MenuType iType = DEFAULT, int iTime = MENU
         case DEFAULT: {
             int iExpires = CORE_GetClientExpires(iClient);
 
-            char szGroup[32], szClientGroup[PLATFORM_MAX_PATH];
+            char szGroup[GROUP_MAX_LENGTH], szClientGroup[PLATFORM_MAX_PATH];
             char szTime[PLATFORM_MAX_PATH], szExpires[PLATFORM_MAX_PATH];
 
             CORE_GetClientGroup(iClient, szGroup, sizeof szGroup);
@@ -181,14 +183,16 @@ stock void CORE_ShowMenu(int iClient, MenuType iType = DEFAULT, int iTime = MENU
 
                 switch(iFType) {
                     case STATUS: {
-                        FormatEx(szItem, sizeof szItem, "%T [%s]", szGroupFeature, iClient, CORE_GetClientFeatureStatus(iClient, szGroupFeature) ? "+" : "-");
+                        if(TranslationPhraseExists(szGroupFeature)) FormatEx(szItem, sizeof szItem, "%T [%s]", szGroupFeature, iClient, CORE_GetClientFeatureStatus(iClient, szGroupFeature) ? "+" : "-");
+                        else FormatEx(szItem, sizeof szItem, "%s [%s]", szGroupFeature, CORE_GetClientFeatureStatus(iClient, szGroupFeature) ? "+" : "-");
+
                         AddMenuItem(g_hMenu, szGroupFeature, szItem);
 
                         char szParent[PLATFORM_MAX_PATH];
                         SearchFeatureParent(szGroupFeature, szParent, sizeof szParent);
 
                         if(strlen(szParent)) {
-                            FormatEx(szItem, sizeof szItem, "%T", szParent, iClient);
+                            FormatEx(szItem, sizeof szItem, TranslationPhraseExists(szParent) ? "%T" : "%s", szParent, iClient);
                             AddMenuItem(g_hMenu, szParent, szItem);
                         }
                     }
@@ -354,8 +358,8 @@ stock void ShowTimesMenu(int iClient) {
     
     g_hConfigs[TIMES] = CreateKeyValues("Times");
 
-    if(!g_hConfigs[TIMES].ImportFromFile(szPath))
-        SetFailState("[Premium::ShowTimesMenu] Failed load config file: %s", szPath);
+    if(!FileToKeyValues(g_hConfigs[TIMES], szPath))
+        SetFailState("Failed to load configuration file with times: %s", szPath);
     
     KvRewind(g_hConfigs[TIMES]);
 

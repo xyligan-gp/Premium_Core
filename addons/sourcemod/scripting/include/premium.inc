@@ -3,7 +3,9 @@
 #endif
 #define _premium_included
 
-#define API_VERSION "1.1.0"
+#define GROUP_MAX_LENGTH 64
+
+#define API_VERSION "1.1.2"
 #define PREMIUM_ADMINCATEGORY "Premium_MainAdminMenu"
 
 enum PremiumFeatureType {
@@ -121,6 +123,13 @@ forward void Premium_OnClientDisconnected(int iClient);
 forward void Premium_OnPlayerSpawn(int iClient, int iTeam);
 
 /**
+ * Emitted when the core configs are fully loaded
+ * 
+ * @noreturn
+ */
+forward void Premium_OnConfigsLoaded();
+
+/**
  * Emitted when registering a feature in Premium
  * 
  * @param szFeature         Unique feature id
@@ -163,6 +172,15 @@ native bool Premium_IsValidClient(int iClient);
  * @return True if the client has Premium access, otherwise false
  */
 native bool Premium_IsClientHaveAccess(int iClient);
+
+/**
+ * Allows to find out if the Premium group is valid
+ * 
+ * @param szGroup       Premium group name
+ * 
+ * @return True if valid, false otherwise.
+ */
+native bool Premium_IsValidGroup(char[] szGroup);
 
 /**
  * Allows to find out if the feature is valid for the Premium group
@@ -221,6 +239,19 @@ native StringMap Premium_GetGroups();
  * @return List of registered Premium features
  */
 native StringMap Premium_GetFeatures();
+
+/**
+ * Allows to get the function value for a client Premium group
+ * 
+ * @param iClient       Index of the client
+ * @param szFeature     Unique feature id
+ * @param szBuffer      Write buffer
+ * @param iMaxLength    Maximum buffer size
+ * 
+ * @return SP_ERROR_NONE on success, any other integer on failure
+ */
+native int Premium_GetFeatureValue(int iClient, char[] szFeature, char[] szBuffer, int iMaxLength);
+
 /**
  * Allows to get a plugin database pointer
  * 
@@ -436,6 +467,7 @@ public void __pl_premium_SetNTVOptional() {
     MarkNativeAsOptional("Premium_IsReady");
     MarkNativeAsOptional("Premium_IsValidClient");
     MarkNativeAsOptional("Premium_IsClientHaveAccess");
+    MarkNativeAsOptional("Premium_IsValidGroup");
     MarkNativeAsOptional("Premium_IsValidFeature");
     MarkNativeAsOptional("Premium_IsRegisteredFeature");
     MarkNativeAsOptional("Premium_IsAllowedFeature");
@@ -443,6 +475,7 @@ public void __pl_premium_SetNTVOptional() {
     MarkNativeAsOptional("Premium_GetConfig");
     MarkNativeAsOptional("Premium_GetGroups");
     MarkNativeAsOptional("Premium_GetFeatures");
+    MarkNativeAsOptional("Premium_GetFeatureValue");
     MarkNativeAsOptional("Premium_GetDatabase");
     MarkNativeAsOptional("Premium_GetDatabaseType");
     MarkNativeAsOptional("Premium_GetDatabasePrefix");

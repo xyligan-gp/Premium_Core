@@ -1,5 +1,3 @@
-#include <sdktools_functions>
-
 public void OnClientPostAdminCheck(int iClient) {
     CreateTimer(1.0, Timer_ClientConnected, GetClientUserId(iClient));
 }

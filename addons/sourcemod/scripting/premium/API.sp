@@ -5,12 +5,14 @@ public APLRes AskPluginLoad2(Handle hMySelf, bool bLate, char[] szError, int iEr
     g_hGlobalForward[OnClientJoin] = CreateGlobalForward("Premium_OnClientConnected", ET_Ignore, Param_Cell);
     g_hGlobalForward[OnClientLeave] = CreateGlobalForward("Premium_OnClientDisconnected", ET_Ignore, Param_Cell);
     g_hGlobalForward[OnClientSpawn] = CreateGlobalForward("Premium_OnPlayerSpawn", ET_Ignore, Param_Cell, Param_Cell);
+    g_hGlobalForward[OnConfigsLoaded] = CreateGlobalForward("Premium_OnConfigsLoaded", ET_Ignore);
     g_hGlobalForward[OnFeatureRegistered] = CreateGlobalForward("Premium_OnFeatureRegistered", ET_Ignore, Param_String);
     g_hGlobalForward[OnFeatureUnregistered] = CreateGlobalForward("Premium_OnFeatureUnregistered", ET_Ignore, Param_String);
 
     CreateNative("Premium_IsReady", API_CreateNative_IsReady);
     CreateNative("Premium_IsValidClient", API_CreateNative_IsValidClient);
     CreateNative("Premium_IsClientHaveAccess", API_CreateNative_IsClientHaveAccess);
+    CreateNative("Premium_IsValidGroup", API_CreateNative_IsValidGroup);
     CreateNative("Premium_IsValidFeature", API_CreateNative_IsValidFeature);
     CreateNative("Premium_IsRegisteredFeature", API_CreateNative_IsRegisteredFeature);
     CreateNative("Premium_IsAllowedFeature", API_CreateNative_IsAllowedFeature);
@@ -19,6 +21,7 @@ public APLRes AskPluginLoad2(Handle hMySelf, bool bLate, char[] szError, int iEr
     CreateNative("Premium_GetConfig", API_CreateNative_GetConfig);
     CreateNative("Premium_GetGroups", API_CreateNative_GetGroups);
     CreateNative("Premium_GetFeatures", API_CreateNative_GetFeatures);
+    CreateNative("Premium_GetFeatureValue", API_CreateNative_GetFeatureValue);
 
     CreateNative("Premium_GetDatabase", API_CreateNative_GetDatabase);
     CreateNative("Premium_GetDatabaseType", API_CreateNative_GetDatabaseType);
@@ -125,6 +128,13 @@ stock void API_CreateForward_OnPlayerSpawn(int iClient, int iTeam) {
     Call_Finish();
 }
 
+stock void API_CreateForward_OnConfigsLoaded() {
+    CORE_Debug(API, "Forward: OnConfigsLoaded");
+
+    Call_StartForward(g_hGlobalForward[OnConfigsLoaded]);
+    Call_Finish();
+}
+
 stock void API_CreateForward_OnFeatureRegistered(const char[] szFeature) {
     CORE_Debug(API,
         "Forward: OnFeatureRegistered | Feature: %s",
@@ -179,6 +189,19 @@ public int API_CreateNative_IsClientHaveAccess(Handle hPlugin, int iNumParams) {
     iClient, bIsHave ? "True" : "False");
 
     return bIsHave;
+}
+
+public int API_CreateNative_IsValidGroup(Handle hPlugin, int iNumParams) {
+    char szGroup[32];
+    GetNativeString(1, szGroup, sizeof szGroup);
+
+    bool IsValid = CORE_IsValidGroup(szGroup);
+
+    CORE_Debug(API,
+        "Native: IsValidGroup | Group: %s - Valid: %s",
+    szGroup, IsValid ? "True" : "False");
+
+    return IsValid;
 }
 
 public int API_CreateNative_IsValidFeature(Handle hPlugin, int iNumParams) {
@@ -258,6 +281,19 @@ public int API_CreateNative_GetFeatures(Handle hPlugin, int iNumParams) {
     return view_as<int>(g_hFeatures);
 }
 
+public int API_CreateNative_GetFeatureValue(Handle hPlugin, int iNumParams) {
+    int iClient = GetNativeCell(1);
+    int iBufLength = GetNativeCell(4);
+
+    char szFeature[PLATFORM_MAX_PATH];
+    GetNativeString(2, szFeature, sizeof szFeature);
+
+    char szValue[PLATFORM_MAX_PATH];
+    CORE_GetFeatureValue(iClient, szFeature, szValue, sizeof szValue);
+
+    return SetNativeString(3, szValue, iBufLength);
+}
+
 public int API_CreateNative_GetDatabase(Handle hPlugin, int iNumParams) {
     return view_as<int>(g_hDatabase);
 }
@@ -298,7 +334,7 @@ public int API_CreateNative_GetClientByAuth(Handle hPlugin, int iNumParams) {
 public int API_CreateNative_GetClientGroup(Handle hPlugin, int iNumParams) {
     int iClient = GetNativeCell(1);
 
-    char szGroup[PLATFORM_MAX_PATH];
+    char szGroup[GROUP_MAX_LENGTH];
     CORE_GetClientGroup(iClient, szGroup, sizeof szGroup);
     
     int iMaxLength = GetNativeCell(3);
@@ -348,7 +384,9 @@ public int API_CreateNative_SetClientFeatureStatus(Handle hPlugin, int iNumParam
         "Native: SetClientFeatureStatus | Client: (Index: %i - Username: %N) => Feature: %s => Status: %s",
     iClient, iClient, szFeature, bIsEnabled ? "Enabled" : "Disabled");
 
-    return CORE_SetClientFeatureStatus(iClient, szFeature, bIsEnabled);
+    CORE_SetClientFeatureStatus(iClient, szFeature, bIsEnabled);
+
+    return 1;
 }
 
 public int API_CreateNative_GiveAccess(Handle hPlugin, int iNumParams) {
