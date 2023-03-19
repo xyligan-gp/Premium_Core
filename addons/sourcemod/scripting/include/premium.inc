@@ -3,9 +3,10 @@
 #endif
 #define _premium_included
 
-#define GROUP_MAX_LENGTH 64
+#define MAX_GROUP_LENGTH 32
+#define MAX_FEATURE_LENGTH 64
 
-#define API_VERSION "1.1.2"
+#define API_VERSION "1.1.3"
 #define PREMIUM_ADMINCATEGORY "Premium_MainAdminMenu"
 
 enum PremiumFeatureType {
@@ -14,8 +15,8 @@ enum PremiumFeatureType {
 }
 
 enum DatabaseType {
-    SQL = 0,
-    MYSQL
+    DB_TYPE_SQL = 0,
+    DB_TYPE_MYSQL
 }
 
 enum DebugType {
