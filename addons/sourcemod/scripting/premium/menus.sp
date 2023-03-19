@@ -77,8 +77,10 @@ public int CallBack_PremiumMenu(Menu hMenu, MenuAction mAction, int iClient, int
                         else FormatEx(szDisplay, sizeof szDisplay, "%T [%s]", szItem, iClient, CORE_GetClientFeatureStatus(iClient, szItem) ? "+" : "-");
                     }
                     
-                    case SELECTABLE:
-                        FormatEx(szDisplay, sizeof szDisplay, "%T", szItem, iClient);
+                    case SELECTABLE: {
+                        if(!TranslationPhraseExists(szItem)) FormatEx(szDisplay, sizeof szDisplay, "%s", szItem);
+                        else FormatEx(szDisplay, sizeof szDisplay, "%T", szItem, iClient);
+                    }
                 }
 
                 ReadPackFunction(hPack);
