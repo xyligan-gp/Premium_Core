@@ -144,7 +144,7 @@ stock void CORE_ShowMenu(int iClient, MenuType iType = DEFAULT, int iTime = MENU
         case DEFAULT: {
             int iExpires = CORE_GetClientExpires(iClient);
 
-            char szGroup[GROUP_MAX_LENGTH], szClientGroup[PLATFORM_MAX_PATH];
+            char szGroup[MAX_GROUP_LENGTH], szClientGroup[MAX_GROUP_LENGTH];
             char szTime[PLATFORM_MAX_PATH], szExpires[PLATFORM_MAX_PATH];
 
             CORE_GetClientGroup(iClient, szGroup, sizeof szGroup);
@@ -160,17 +160,17 @@ stock void CORE_ShowMenu(int iClient, MenuType iType = DEFAULT, int iTime = MENU
             StringMap hGroupFeatures;
             GetTrieValue(g_hGroups, szGroup, hGroupFeatures);
 
-            Handle hFeaturesSnap;
+            Handle hFeatures;
             int iFeaturesCount = 0;
 
             if(hGroupFeatures != INVALID_HANDLE) {
-                hFeaturesSnap = CreateTrieSnapshot(hGroupFeatures);
-                iFeaturesCount = TrieSnapshotLength(hFeaturesSnap);
+                hFeatures = CreateTrieSnapshot(hGroupFeatures);
+                iFeaturesCount = TrieSnapshotLength(hFeatures);
             }
 
             for(int i = 0; i < iFeaturesCount; i++) {
-                char szGroupFeature[32];
-                GetTrieSnapshotKey(hFeaturesSnap, i, szGroupFeature, sizeof szGroupFeature);
+                char szGroupFeature[MAX_FEATURE_LENGTH];
+                GetTrieSnapshotKey(hFeatures, i, szGroupFeature, sizeof szGroupFeature);
                 
                 if(!CORE_IsRegisteredFeature(szGroupFeature) || !CORE_GetFeatureStatus(szGroupFeature, szGroup)) continue;
 
@@ -206,7 +206,7 @@ stock void CORE_ShowMenu(int iClient, MenuType iType = DEFAULT, int iTime = MENU
                 }
             }
 
-            CloseHandle(hFeaturesSnap);
+            CloseHandle(hFeatures);
 
             if(!iFeaturesCount || !GetMenuItemCount(g_hMenu)) {
                 char szItem[PLATFORM_MAX_PATH];
@@ -330,7 +330,7 @@ public int CallBack_ShowAllClientsMenu(Menu hMenu, MenuAction mAction, int iClie
             ClearClientData(iClient);
             CreateClientData(iClient);
 
-            SetTrieValue(g_hClientData[iClient], "Action", ADD_CLIENT);
+            SetTrieValue(g_hClientData[iClient], "Action", ACTION_ADD_CLIENT);
             SetTrieValue(g_hClientData[iClient], "Target", StringToInt(szUserId));
 
             ShowTimesMenu(iClient);
@@ -355,42 +355,42 @@ stock void ShowTimesMenu(int iClient) {
     char szPath[PLATFORM_MAX_PATH];
     BuildPath(Path_SM, szPath, sizeof szPath, TIMES_PATH);
 
-    if(g_hConfigs[TIMES] != INVALID_HANDLE)
-        delete g_hConfigs[TIMES];
+    if(g_hConfigs[CONFIG_TIMES] != INVALID_HANDLE)
+        delete g_hConfigs[CONFIG_TIMES];
     
-    g_hConfigs[TIMES] = CreateKeyValues("Times");
+    g_hConfigs[CONFIG_TIMES] = CreateKeyValues("Times");
 
-    if(!FileToKeyValues(g_hConfigs[TIMES], szPath))
+    if(!FileToKeyValues(g_hConfigs[CONFIG_TIMES], szPath))
         SetFailState("Failed to load configuration file with times: %s", szPath);
     
-    KvRewind(g_hConfigs[TIMES]);
+    KvRewind(g_hConfigs[CONFIG_TIMES]);
 
     ActionType iAction;
     GetTrieValue(g_hClientData[iClient], "Action", iAction);
 
-    if(KvGotoFirstSubKey(g_hConfigs[TIMES])) {
+    if(KvGotoFirstSubKey(g_hConfigs[CONFIG_TIMES])) {
         char szLang[2][8], szSection[32], szItem[PLATFORM_MAX_PATH];
 
         GetLanguageInfo(GetServerLanguage(), szLang[0], sizeof szLang[]);
         GetLanguageInfo(GetClientLanguage(iClient), szLang[1], sizeof szLang[]);
 
         do {
-            KvGetSectionName(g_hConfigs[TIMES], szSection, sizeof szSection);
-            KvGetString(g_hConfigs[TIMES], szLang[1], szItem, sizeof szItem, "LangError");
+            KvGetSectionName(g_hConfigs[CONFIG_TIMES], szSection, sizeof szSection);
+            KvGetString(g_hConfigs[CONFIG_TIMES], szLang[1], szItem, sizeof szItem, "LangError");
 
             if(!strlen(szItem))
-                KvGetString(g_hConfigs[TIMES], szLang[0], szItem, sizeof szItem, "LangError");
+                KvGetString(g_hConfigs[CONFIG_TIMES], szLang[0], szItem, sizeof szItem, "LangError");
 
-            if(iAction == UPDATE_EXPIRES) {
+            if(iAction == ACTION_UPDATE_EXPIRES) {
                 ExpiresAction iExpAction;
                 GetTrieValue(g_hClientData[iClient], "UpdateType", iExpAction);
                 
-                if(iExpAction != SET) {
+                if(iExpAction != EXP_ACTION_SET) {
                     if(StringToInt(szSection) != 0)
                         AddMenuItem(hMenu, szSection, szItem);
                 }else AddMenuItem(hMenu, szSection, szItem);
             }else AddMenuItem(hMenu, szSection, szItem);
-        }while(KvGotoNextKey(g_hConfigs[TIMES], false))
+        }while(KvGotoNextKey(g_hConfigs[CONFIG_TIMES], false))
     }
 
     if(!GetMenuItemCount(hMenu)) {
@@ -414,17 +414,17 @@ public int CallBack_ShowTimesMenu(Menu hMenu, MenuAction mAction, int iClient, i
             ActionType iAction;
             GetTrieValue(g_hClientData[iClient], "Action", iAction);
 
-            if(iAction == ADD_CLIENT) {
+            if(iAction == ACTION_ADD_CLIENT) {
                 SetTrieValue(g_hClientData[iClient], "Expire", StringToInt(szTime));
 
                 ShowGroupsMenu(iClient);
             }
 
-            if(iAction == UPDATE_EXPIRES) {
+            if(iAction == ACTION_UPDATE_EXPIRES) {
                 ExpiresAction iExpAction;
                 GetTrieValue(g_hClientData[iClient], "UpdateType", iExpAction);
                 
-                char szAuth[32];
+                char szAuth[MAX_AUTHID_LENGTH];
                 GetTrieString(g_hClientData[iClient], "Target", szAuth, sizeof szAuth);
                 
                 char szQuery[PLATFORM_MAX_PATH];
@@ -441,7 +441,7 @@ public int CallBack_ShowTimesMenu(Menu hMenu, MenuAction mAction, int iClient, i
 
                 int iExpValue = StringToInt(szTime);
 
-                char szAdminAuth[32], szName[2][MAX_NAME_LENGTH];
+                char szAdminAuth[MAX_AUTHID_LENGTH], szName[2][MAX_NAME_LENGTH];
 
                 GetClientName(iClient, szName[0], sizeof szName[]);
                 GetClientAuthId(iClient, AuthId_Steam2, szAdminAuth, sizeof szAdminAuth);
@@ -459,13 +459,13 @@ public int CallBack_ShowTimesMenu(Menu hMenu, MenuAction mAction, int iClient, i
                 SetTrieString(hData, "3", szAuth);
                 SetTrieString(hData, "4", szTimeValue);
 
-                if(iExpAction == SET) {
+                if(iExpAction == EXP_ACTION_SET) {
                     iExpires = iExpValue == 0 ? iExpValue : iExpires == 0 ? GetTime() + iExpValue : iExpires + iExpValue;
 
                     FormatEx(szPhrase, sizeof szPhrase, "PremiumLog_SetPremiumExpires");
                 }
 
-                if(iExpAction == ADD) {
+                if(iExpAction == EXP_ACTION_ADD) {
                     iExpires = iExpires == 0 ? GetTime() + iExpValue : iExpires + iExpValue;
                     
                     char szValue[PLATFORM_MAX_PATH];
@@ -476,7 +476,7 @@ public int CallBack_ShowTimesMenu(Menu hMenu, MenuAction mAction, int iClient, i
                     FormatEx(szPhrase, sizeof szPhrase, "PremiumLog_AddPremiumExpires");
                 }
 
-                if(iExpAction == TAKE) {
+                if(iExpAction == EXP_ACTION_TAKE) {
                     iExpires = iExpires - iExpValue;
 
                     char szValue[PLATFORM_MAX_PATH];
@@ -499,10 +499,10 @@ public int CallBack_ShowTimesMenu(Menu hMenu, MenuAction mAction, int iClient, i
                 ActionType iAction;
                 GetTrieValue(g_hClientData[iClient], "Action", iAction);
 
-                if(iAction == ADD_CLIENT)
+                if(iAction == ACTION_ADD_CLIENT)
                     ShowAllClientsMenu(iClient);
                 
-                if(iAction == UPDATE_EXPIRES)
+                if(iAction == ACTION_UPDATE_EXPIRES)
                     ShowUpdateExpires(iClient);
             }
         }
@@ -518,19 +518,18 @@ stock void ShowGroupsMenu(int iClient) {
 
     SetMenuTitle(hMenu, "%T\n ", "Titles_SelectGroup", iClient);
 
+    char szGroup[MAX_GROUP_LENGTH];
     Handle hGroups = CreateTrieSnapshot(g_hGroups);
-
     int iLength = TrieSnapshotLength(hGroups);
 
     for(int i = 0; i < iLength; i++) {
-        char szGroup[32];
         GetTrieSnapshotKey(hGroups, i, szGroup, sizeof szGroup);
         
         ActionType iAction;
 
         if(GetTrieValue(g_hClientData[iClient], "Action", iAction)) {
-            if(iAction == UPDATE_GROUP) {
-                char szAuth[32], szClientGroup[32];
+            if(iAction == ACTION_UPDATE_GROUP) {
+                char szAuth[MAX_AUTHID_LENGTH], szClientGroup[MAX_GROUP_LENGTH];
 
                 GetTrieString(g_hClientData[iClient], "Target", szAuth, sizeof szAuth);
                 GetClientGroup(szAuth, szClientGroup, sizeof szClientGroup);
@@ -542,6 +541,8 @@ stock void ShowGroupsMenu(int iClient) {
             }else AddMenuItem(hMenu, szGroup, szGroup);
         }else AddMenuItem(hMenu, szGroup, szGroup);
     }
+
+    CloseHandle(hGroups);
 
     if(!GetMenuItemCount(hMenu)) {
         char szItem[PLATFORM_MAX_PATH];
@@ -558,13 +559,13 @@ stock void ShowGroupsMenu(int iClient) {
 public int CallBack_ShowGroupsMenu(Menu hMenu, MenuAction mAction, int iClient, int iSlot) {
     switch(mAction) {
         case MenuAction_Select: {
-            char szGroup[32];
+            char szGroup[MAX_GROUP_LENGTH];
             GetMenuItem(hMenu, iSlot, szGroup, sizeof szGroup);
             
             ActionType iType;
             GetTrieValue(g_hClientData[iClient], "Action", iType);
 
-            if(iType == ADD_CLIENT) {
+            if(iType == ACTION_ADD_CLIENT) {
                 int iExpires;
                 GetTrieValue(g_hClientData[iClient], "Expire", iExpires);
                 
@@ -588,8 +589,8 @@ public int CallBack_ShowGroupsMenu(Menu hMenu, MenuAction mAction, int iClient, 
                 CORE_PrintToChat(iClient, szBuffer);
             }
 
-            if(iType == UPDATE_GROUP) {
-                char szAuth[32];
+            if(iType == ACTION_UPDATE_GROUP) {
+                char szAuth[MAX_AUTHID_LENGTH];
                 GetTrieString(g_hClientData[iClient], "Target", szAuth, sizeof szAuth);
 
                 SetClientGroup(szAuth, szGroup);
@@ -610,7 +611,7 @@ public int CallBack_ShowGroupsMenu(Menu hMenu, MenuAction mAction, int iClient, 
                 
                 StringMap hData = CreateTrie();
 
-                char szAdminAuth[32], szName[2][MAX_NAME_LENGTH];
+                char szAdminAuth[MAX_AUTHID_LENGTH], szName[2][MAX_NAME_LENGTH];
 
                 GetPremiumClientName(szAuth, szName[1], sizeof szName[]);
                 GetClientName(iClient, szName[0], sizeof szName[]);
@@ -631,14 +632,14 @@ public int CallBack_ShowGroupsMenu(Menu hMenu, MenuAction mAction, int iClient, 
                 ActionType iType;
                 GetTrieValue(g_hClientData[iClient], "Action", iType);
 
-                if(iType == ADD_CLIENT) {
+                if(iType == ACTION_ADD_CLIENT) {
                     SetTrieValue(g_hClientData[iClient], "Expire", -1);
                 
                     ShowTimesMenu(iClient);
                 }
 
-                if(iType == UPDATE_GROUP) {
-                    char szAuth[32];
+                if(iType == ACTION_UPDATE_GROUP) {
+                    char szAuth[MAX_AUTHID_LENGTH];
                     GetTrieString(g_hClientData[iClient], "Target", szAuth, sizeof szAuth);
                     
                     ShowClientInfo(iClient, szAuth);
@@ -663,7 +664,7 @@ stock void ShowPremiumClientsMenu(int iClient) {
 public int CallBack_ShowPremiumClientsMenu(Menu hMenu, MenuAction mAction, int iClient, int iSlot) {
     switch(mAction) {
         case MenuAction_Select: {
-            char szAuth[32];
+            char szAuth[MAX_AUTHID_LENGTH];
             GetMenuItem(hMenu, iSlot, szAuth, sizeof szAuth);
 
             ShowClientInfo(iClient, szAuth);
@@ -693,7 +694,7 @@ public int CallBack_ShowClientInfo(Menu hMenu, MenuAction mAction, int iClient, 
             char szAction[64];
             GetMenuItem(hMenu, iSlot, szAction, sizeof szAction);
 
-            char szAuth[32];
+            char szAuth[MAX_AUTHID_LENGTH];
             GetTrieString(g_hClientData[iClient], "Target", szAuth, sizeof szAuth);
 
             if(StrEqual(szAction, "removeAccess")) {
@@ -715,13 +716,13 @@ public int CallBack_ShowClientInfo(Menu hMenu, MenuAction mAction, int iClient, 
             }
 
             if(StrEqual(szAction, "changeGroup")) {
-                SetTrieValue(g_hClientData[iClient], "Action", UPDATE_GROUP);
+                SetTrieValue(g_hClientData[iClient], "Action", ACTION_UPDATE_GROUP);
 
                 ShowGroupsMenu(iClient);
             }
 
             if(StrEqual(szAction, "changeExpires")) {
-                SetTrieValue(g_hClientData[iClient], "Action", UPDATE_EXPIRES);
+                SetTrieValue(g_hClientData[iClient], "Action", ACTION_UPDATE_EXPIRES);
 
                 ShowUpdateExpires(iClient);
             }
@@ -762,24 +763,24 @@ stock void ShowUpdateExpires(int iClient) {
 public int CallBack_UpdateExpires(Menu hMenu, MenuAction mAction, int iClient, int iSlot) {
     switch(mAction) {
         case MenuAction_Select: {
-            char szAction[PLATFORM_MAX_PATH];
+            char szAction[64];
             GetMenuItem(hMenu, iSlot, szAction, sizeof szAction);
 
             if(StrEqual(szAction, "setExpire"))
-                SetTrieValue(g_hClientData[iClient], "UpdateType", SET);
+                SetTrieValue(g_hClientData[iClient], "UpdateType", EXP_ACTION_SET);
             
             if(StrEqual(szAction, "addExpire"))
-                SetTrieValue(g_hClientData[iClient], "UpdateType", ADD);
+                SetTrieValue(g_hClientData[iClient], "UpdateType", EXP_ACTION_ADD);
             
             if(StrEqual(szAction, "takeExpire"))
-                SetTrieValue(g_hClientData[iClient], "UpdateType", TAKE);
+                SetTrieValue(g_hClientData[iClient], "UpdateType", EXP_ACTION_TAKE);
             
             ShowTimesMenu(iClient);
         }
 
         case MenuAction_Cancel: {
             if(iSlot == MenuCancel_ExitBack) {
-                char szAuth[32];
+                char szAuth[MAX_AUTHID_LENGTH];
                 GetTrieString(g_hClientData[iClient], "Target", szAuth, sizeof szAuth);
 
                 ShowClientInfo(iClient, szAuth);
@@ -814,10 +815,10 @@ stock void ShowDatabaseManagementMenu(int iClient) {
 public int CallBack_ShowDatabaseManagementMenu(Menu hMenu, MenuAction mAction, int iClient, int iSlot) {
     switch(mAction) {
         case MenuAction_Select: {
-            char szAction[32];
+            char szAction[64];
             GetMenuItem(hMenu, iSlot, szAction, sizeof szAction);
 
-            char szAuth[32], szName[MAX_NAME_LENGTH], szQuery[PLATFORM_MAX_PATH];
+            char szAuth[MAX_AUTHID_LENGTH], szName[MAX_NAME_LENGTH], szQuery[PLATFORM_MAX_PATH];
 
             GetClientName(iClient, szName, sizeof szName);
             GetClientAuthId(iClient, AuthId_Steam2, szAuth, sizeof szAuth);

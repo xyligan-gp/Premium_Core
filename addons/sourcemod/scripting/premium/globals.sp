@@ -3,13 +3,13 @@
 #define DEBUG_API            // Отладка API запросов
 #define DEBUG_MODULES        // Отладка работы модулей
 
+#define MAX_CONFIG_MAPS 32
+
 #define PLUGIN_NAME "[Premium] Core"
 #define PLUGIN_AUTHOR "xyligan"
 #define PLUGIN_DESCRIPTION "Ядро для выдачи привилегированного доступа игрокам"
-#define PLUGIN_VERSION "1.1.3-dev.1679232743"
+#define PLUGIN_VERSION "1.1.3-dev.1679254600"
 #define PLUGIN_URL "https://csdevs.net"
-
-#define CHARSET "utf8mb4_general_ci"
 
 #define LOGS_PATH "logs/premium.log"
 #define DEBUG_PATH "logs/premium.debug.log"
@@ -19,12 +19,14 @@
 #define GROUPS_PATH "configs/premium/core/groups.cfg"
 #define TIMES_PATH "configs/premium/core/times.cfg"
 
+#define MAX_MAP_LENGTH 128
+#define CHARSET "utf8mb4_general_ci"
 #define NO_ACCESS_SOUND "buttons/button11.wav"
 
 enum ConfigType {
-    MAIN = 0,
-    TIMES,
-    GROUPS
+    CONFIG_MAIN = 0,
+    CONFIG_TIMES,
+    CONFIG_GROUPS
 }
 
 enum Forwards {
@@ -40,15 +42,15 @@ enum Forwards {
 }
 
 enum ActionType {
-    ADD_CLIENT = 0,
-    UPDATE_GROUP,
-    UPDATE_EXPIRES
+    ACTION_ADD_CLIENT = 0,
+    ACTION_UPDATE_GROUP,
+    ACTION_UPDATE_EXPIRES
 }
 
 enum ExpiresAction {
-    SET = 0,
-    ADD,
-    TAKE
+    EXP_ACTION_SET = 0,
+    EXP_ACTION_ADD,
+    EXP_ACTION_TAKE
 }
 
 Menu g_hMenu;

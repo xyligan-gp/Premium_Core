@@ -58,6 +58,8 @@ public APLRes AskPluginLoad2(Handle hMySelf, bool bLate, char[] szError, int iEr
 stock void API_CreateForward_OnReady() {
     g_bIsReady = true;
 
+    CORE_Debug(API, "Forward: OnReady");
+
     Call_StartForward(g_hGlobalForward[OnReady]);
     Call_Finish();
 }
@@ -192,7 +194,7 @@ public int API_CreateNative_IsClientHaveAccess(Handle hPlugin, int iNumParams) {
 }
 
 public int API_CreateNative_IsValidGroup(Handle hPlugin, int iNumParams) {
-    char szGroup[32];
+    char szGroup[MAX_GROUP_LENGTH];
     GetNativeString(1, szGroup, sizeof szGroup);
 
     bool IsValid = CORE_IsValidGroup(szGroup);
@@ -205,10 +207,10 @@ public int API_CreateNative_IsValidGroup(Handle hPlugin, int iNumParams) {
 }
 
 public int API_CreateNative_IsValidFeature(Handle hPlugin, int iNumParams) {
-    char szFeature[32];
+    char szFeature[MAX_FEATURE_LENGTH];
     GetNativeString(1, szFeature, sizeof szFeature);
 
-    char szGroup[PLATFORM_MAX_PATH];
+    char szGroup[MAX_GROUP_LENGTH];
     GetNativeString(2, szGroup, sizeof szGroup);
 
     bool bIsValid = CORE_IsValidFeature(szFeature, szGroup);
@@ -234,7 +236,7 @@ public int API_CreateNative_IsRegisteredFeature(Handle hPlugin, int iNumParams) 
 }
 
 public int API_CreateNative_IsAllowedFeature(Handle hPlugin, int iNumParams) {
-    char szFeature[32];
+    char szFeature[MAX_FEATURE_LENGTH];
     GetNativeString(1, szFeature, sizeof szFeature);
 
     bool bIsAllowed = CORE_IsAllowedFeature(szFeature);
@@ -247,7 +249,7 @@ public int API_CreateNative_IsAllowedFeature(Handle hPlugin, int iNumParams) {
 }
 
 public int API_CreateNative_IsAllowedFirstRound(Handle hPlugin, int iNumParams) {
-    char szFeature[32];
+    char szFeature[MAX_FEATURE_LENGTH];
     GetNativeString(1, szFeature, sizeof szFeature);
 
     bool bIsAllowed = CORE_IsAllowedFirstRound(szFeature);
@@ -260,9 +262,11 @@ public int API_CreateNative_IsAllowedFirstRound(Handle hPlugin, int iNumParams) 
 }
 
 public int API_CreateNative_GetConfig(Handle hPlugin, int iNumParams) {
-    KvRewind(g_hConfigs[MAIN]);
+    KvRewind(g_hConfigs[CONFIG_MAIN]);
 
-    return view_as<int>(g_hConfigs[MAIN]);
+    CORE_Debug(API, "Native: GetConfig");
+
+    return view_as<int>(g_hConfigs[CONFIG_MAIN]);
 }
 
 public int API_CreateNative_GetGroups(Handle hPlugin, int iNumParams) {
@@ -285,16 +289,22 @@ public int API_CreateNative_GetFeatureValue(Handle hPlugin, int iNumParams) {
     int iClient = GetNativeCell(1);
     int iBufLength = GetNativeCell(4);
 
-    char szFeature[PLATFORM_MAX_PATH];
+    char szFeature[MAX_FEATURE_LENGTH];
     GetNativeString(2, szFeature, sizeof szFeature);
 
     char szValue[PLATFORM_MAX_PATH];
     CORE_GetFeatureValue(iClient, szFeature, szValue, sizeof szValue);
 
+    CORE_Debug(API,
+        "Native: GetFeatureValue | Client Index: %i | Feature ID: %s | feature Value: %s",
+    iClient, szFeature, szValue);
+
     return SetNativeString(3, szValue, iBufLength);
 }
 
 public int API_CreateNative_GetDatabase(Handle hPlugin, int iNumParams) {
+    CORE_Debug(API, "Native: GetDatabase");
+
     return view_as<int>(g_hDatabase);
 }
 
@@ -319,7 +329,7 @@ public int API_CreateNative_GetDatabasePrefix(Handle hPlugin, int iNumParams) {
 }
 
 public int API_CreateNative_GetClientByAuth(Handle hPlugin, int iNumParams) {
-    char szAuth[32];
+    char szAuth[MAX_AUTHID_LENGTH];
     GetNativeString(1, szAuth, sizeof szAuth);
 
     int iClient = CORE_GetClientByAuth(szAuth);
@@ -334,7 +344,7 @@ public int API_CreateNative_GetClientByAuth(Handle hPlugin, int iNumParams) {
 public int API_CreateNative_GetClientGroup(Handle hPlugin, int iNumParams) {
     int iClient = GetNativeCell(1);
 
-    char szGroup[GROUP_MAX_LENGTH];
+    char szGroup[MAX_GROUP_LENGTH];
     CORE_GetClientGroup(iClient, szGroup, sizeof szGroup);
     
     int iMaxLength = GetNativeCell(3);
@@ -360,7 +370,7 @@ public int API_CreateNative_GetClientExpires(Handle hPlugin, int iNumParams) {
 public int API_CreateNative_GetClientFeatureStatus(Handle hPlugin, int iNumParams) {
     int iClient = GetNativeCell(1);
 
-    char szFeature[32];
+    char szFeature[MAX_FEATURE_LENGTH];
     GetNativeString(2, szFeature, sizeof szFeature);
 
     bool bStatus = CORE_GetClientFeatureStatus(iClient, szFeature);
@@ -375,7 +385,7 @@ public int API_CreateNative_GetClientFeatureStatus(Handle hPlugin, int iNumParam
 public int API_CreateNative_SetClientFeatureStatus(Handle hPlugin, int iNumParams) {
     int iClient = GetNativeCell(1);
 
-    char szFeature[32];
+    char szFeature[MAX_FEATURE_LENGTH];
     GetNativeString(2, szFeature, sizeof szFeature);
     
     bool bIsEnabled = GetNativeCell(3);
@@ -392,7 +402,7 @@ public int API_CreateNative_SetClientFeatureStatus(Handle hPlugin, int iNumParam
 public int API_CreateNative_GiveAccess(Handle hPlugin, int iNumParams) {
     int iClient = GetNativeCell(1);
 
-    char szGroup[32]
+    char szGroup[MAX_GROUP_LENGTH]
     GetNativeString(2, szGroup, sizeof szGroup);
 
     int iAdmin = GetNativeCell(3);
@@ -408,7 +418,7 @@ public int API_CreateNative_GiveAccess(Handle hPlugin, int iNumParams) {
 public int API_CreateNative_SetClientGroup(Handle hPlugin, int iNumParams) {
     int iClient = GetNativeCell(1);
 
-    char szGroup[32];
+    char szGroup[MAX_GROUP_LENGTH];
     GetNativeString(2, szGroup, sizeof szGroup);
 
     int iStatus = -1;
@@ -427,7 +437,7 @@ public int API_CreateNative_SetClientGroup(Handle hPlugin, int iNumParams) {
 }
 
 public int API_CreateNative_RemoveAccess(Handle hPlugin, int iNumParams) {
-    char szAuth[32];
+    char szAuth[MAX_AUTHID_LENGTH];
     GetNativeString(1, szAuth, sizeof szAuth);
 
     int iAdmin = GetNativeCell(2);
@@ -470,7 +480,7 @@ public int API_CreateNative_ShowMenu(Handle hPlugin, int iNumParams) {
 public int API_CreateNative_RegisterFeature(Handle hPlugin, int iNumParams) {
     PremiumFeatureType iType = GetNativeCell(1);
 
-    char szFeature[32];
+    char szFeature[MAX_FEATURE_LENGTH];
     GetNativeString(2, szFeature, sizeof szFeature);
 
     CORE_Debug(API,
@@ -481,7 +491,7 @@ public int API_CreateNative_RegisterFeature(Handle hPlugin, int iNumParams) {
 }
 
 public int API_CreateNative_UnregisterFeature(Handle hPlugin, int iNumParams) {
-    char szFeature[32];
+    char szFeature[MAX_FEATURE_LENGTH];
     GetNativeString(1, szFeature, sizeof szFeature);
 
     CORE_Debug(API,
@@ -521,7 +531,9 @@ public int API_CreateNative_Debug(Handle hPlugin, int iNumParams) {
     char szLog[1024];
     FormatNativeString(0, 2, 3, sizeof szLog, _, szLog);
 
-    return view_as<int>(CORE_Debug(iType, szLog));
+    CORE_Debug(iType, szLog);
+
+    return -1;
 }
 
 public int API_CreateNative_FormatAccessTime(Handle hPlugin, int iNumParams) {

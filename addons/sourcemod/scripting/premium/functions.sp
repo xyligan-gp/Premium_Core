@@ -14,25 +14,25 @@ stock void InitEngine() {
 stock void InitConfig(bool bIsNotify = false, int iClient = 0) {
     BuildPath(Path_SM, g_szConfig, sizeof g_szConfig, CONFIG_PATH);
 
-    if(g_hConfigs[MAIN] != INVALID_HANDLE)
-        delete g_hConfigs[MAIN];
+    if(g_hConfigs[CONFIG_MAIN] != INVALID_HANDLE)
+        delete g_hConfigs[CONFIG_MAIN];
     
-    g_hConfigs[MAIN] = CreateKeyValues("Premium");
+    g_hConfigs[CONFIG_MAIN] = CreateKeyValues("Premium");
 
-    if(!FileToKeyValues(g_hConfigs[MAIN], g_szConfig))
+    if(!FileToKeyValues(g_hConfigs[CONFIG_MAIN], g_szConfig))
         SetFailState("Failed to load the main configuration file of the plugin: %s", g_szConfig);
     
     char szFlags[16];
-    KvGetString(g_hConfigs[MAIN], "AccessAdminFlags", szFlags, sizeof szFlags, "z");
+    KvGetString(g_hConfigs[CONFIG_MAIN], "AccessAdminFlags", szFlags, sizeof szFlags, "z");
     g_iAdminFlags = ReadFlagString(szFlags);
 
-    KvGetString(g_hConfigs[MAIN], "DatabaseTableName", g_szTablePrefix, sizeof g_szTablePrefix, "premium");
+    KvGetString(g_hConfigs[CONFIG_MAIN], "DatabaseTableName", g_szTablePrefix, sizeof g_szTablePrefix, "premium");
 
-    g_fCheckInterval = KvGetFloat(g_hConfigs[MAIN], "CheckPremiumAccessInterval", 0.1);
+    g_fCheckInterval = KvGetFloat(g_hConfigs[CONFIG_MAIN], "CheckPremiumAccessInterval", 0.1);
 
-    g_bIsNotify[0] = view_as<bool>(KvGetNum(g_hConfigs[MAIN], "GiveAccessNotify", 1));
-    g_bIsNotify[1] = view_as<bool>(KvGetNum(g_hConfigs[MAIN], "RemoveAccessNotify", 1));
-    g_bIsNotify[2] = view_as<bool>(KvGetNum(g_hConfigs[MAIN], "ConnectAccessNotify", 1));
+    g_bIsNotify[0] = view_as<bool>(KvGetNum(g_hConfigs[CONFIG_MAIN], "GiveAccessNotify", 1));
+    g_bIsNotify[1] = view_as<bool>(KvGetNum(g_hConfigs[CONFIG_MAIN], "RemoveAccessNotify", 1));
+    g_bIsNotify[2] = view_as<bool>(KvGetNum(g_hConfigs[CONFIG_MAIN], "ConnectAccessNotify", 1));
 
     if(bIsNotify) {
         char szBuffer[PLATFORM_MAX_PATH];
@@ -40,7 +40,7 @@ stock void InitConfig(bool bIsNotify = false, int iClient = 0) {
 
         CORE_PrintToChat(iClient, szBuffer);
         
-        char szAuth[32];
+        char szAuth[MAX_AUTHID_LENGTH];
         GetClientAuthId(iClient, AuthId_Steam2, szAuth, sizeof szAuth);
 
         char szName[MAX_NAME_LENGTH];
@@ -56,8 +56,8 @@ stock void InitConfig(bool bIsNotify = false, int iClient = 0) {
 }
 
 stock void InitCommands() {
-    char szConfigCommands[PLATFORM_MAX_PATH];
-    KvGetString(g_hConfigs[MAIN], "PremiumMenuCommands", szConfigCommands, sizeof szConfigCommands, "sm_vip;sm_premium");
+    char szConfigCommands[1024];
+    KvGetString(g_hConfigs[CONFIG_MAIN], "PremiumMenuCommands", szConfigCommands, sizeof szConfigCommands, "sm_vip;sm_premium");
 
     char szCommands[16][32];
     int iLength = ExplodeString(szConfigCommands, ";", szCommands, sizeof szCommands, sizeof szCommands[]);
@@ -90,43 +90,43 @@ stock void LoadPremiumGroups() {
     char szPath[PLATFORM_MAX_PATH];
     BuildPath(Path_SM, szPath, sizeof szPath, GROUPS_PATH);
 
-    if(g_hConfigs[GROUPS] != INVALID_HANDLE)
-        delete g_hConfigs[TIMES];
+    if(g_hConfigs[CONFIG_GROUPS] != INVALID_HANDLE)
+        delete g_hConfigs[CONFIG_TIMES];
     
-    g_hConfigs[GROUPS] = CreateKeyValues("Groups");
+    g_hConfigs[CONFIG_GROUPS] = CreateKeyValues("Groups");
 
-    if(!FileToKeyValues(g_hConfigs[GROUPS], szPath))
+    if(!FileToKeyValues(g_hConfigs[CONFIG_GROUPS], szPath))
         SetFailState("Failed to load configuration file with groups: %s", szPath);
     
-    KvRewind(g_hConfigs[GROUPS]);
+    KvRewind(g_hConfigs[CONFIG_GROUPS]);
 
-    if(KvGotoFirstSubKey(g_hConfigs[GROUPS], false)) {
-        char szGroup[32];
+    if(KvGotoFirstSubKey(g_hConfigs[CONFIG_GROUPS], false)) {
+        char szGroup[MAX_GROUP_LENGTH];
 
         do {
-            KvGetSectionName(g_hConfigs[GROUPS], szGroup, sizeof szGroup);
+            KvGetSectionName(g_hConfigs[CONFIG_GROUPS], szGroup, sizeof szGroup);
 
             LoadGroupFeatures(szGroup);
-        }while(KvGotoNextKey(g_hConfigs[GROUPS]))
+        }while(KvGotoNextKey(g_hConfigs[CONFIG_GROUPS]))
     }
 }
 
 stock void LoadGroupFeatures(const char[] szGroup) {
-    if(KvGotoFirstSubKey(g_hConfigs[GROUPS], false)) {
+    if(KvGotoFirstSubKey(g_hConfigs[CONFIG_GROUPS], false)) {
         StringMap hFeatures = CreateTrie();
 
         do {
-            char szFeature[32], szValue[32];
+            char szFeature[MAX_FEATURE_LENGTH], szValue[PLATFORM_MAX_PATH];
 
-            KvGetSectionName(g_hConfigs[GROUPS], szFeature, sizeof szFeature);
-            KvGetString(g_hConfigs[GROUPS], NULL_STRING, szValue, sizeof szValue);
+            KvGetSectionName(g_hConfigs[CONFIG_GROUPS], szFeature, sizeof szFeature);
+            KvGetString(g_hConfigs[CONFIG_GROUPS], NULL_STRING, szValue, sizeof szValue);
 
             StringToUpperCase(szFeature, 0, 1);
 
             SetTrieString(hFeatures, szFeature, szValue);
-        }while(KvGotoNextKey(g_hConfigs[GROUPS], false))
+        }while(KvGotoNextKey(g_hConfigs[CONFIG_GROUPS], false))
 
-        KvGoBack(g_hConfigs[GROUPS]);
+        KvGoBack(g_hConfigs[CONFIG_GROUPS]);
 
         SetTrieValue(g_hGroups, szGroup, hFeatures);
     }
@@ -166,7 +166,7 @@ stock void ClearClientData(int iClient) {
 }
 
 stock bool IsValidClientFeature(int iClient, const char[] szFeature) {
-    char szAuth[32], szEscapedFeature[64], szQuery[PLATFORM_MAX_PATH];
+    char szAuth[MAX_AUTHID_LENGTH], szEscapedFeature[MAX_FEATURE_LENGTH], szQuery[PLATFORM_MAX_PATH];
     GetClientAuthId(iClient, AuthId_Steam2, szAuth, sizeof szAuth);
 
     SQL_EscapeString(g_hDatabase, szFeature, szEscapedFeature, sizeof szEscapedFeature);
@@ -183,37 +183,47 @@ stock bool IsValidClientFeature(int iClient, const char[] szFeature) {
 }
 
 stock int SearchFeatureParent(const char[] szFeature, char[] szBuffer, int iMaxLength) {
+    int iBufLength = -1;
+
     if(GetTrieSize(g_hFeatures)) {
         Handle hFeatures = CreateTrieSnapshot(g_hFeatures);
         int iFeaturesCount = TrieSnapshotLength(hFeatures);
 
         for(int i = 0; i < iFeaturesCount; i++) {
-            char szGlobalFeature[128];
+            char szGlobalFeature[MAX_FEATURE_LENGTH];
             GetTrieSnapshotKey(hFeatures, i, szGlobalFeature, sizeof szGlobalFeature);
 
             if(strlen(szGlobalFeature) == strlen(szFeature)) continue;
             if(StrEqual(szGlobalFeature, szFeature)) continue;
 
             if(strlen(szGlobalFeature) > strlen(szFeature)) {
-                if(StrContains(szGlobalFeature, szFeature) != -1)
-                    return strcopy(szBuffer, iMaxLength, szGlobalFeature);
+                if(StrContains(szGlobalFeature, szFeature) != -1) {
+                    iBufLength = strcopy(szBuffer, iMaxLength, szGlobalFeature);
+
+                    break;
+                }
             }else{
-                if(StrContains(szFeature, szGlobalFeature) != -1)
-                    return strcopy(szBuffer, iMaxLength, szGlobalFeature);
+                if(StrContains(szFeature, szGlobalFeature) != -1) {
+                    iBufLength = strcopy(szBuffer, iMaxLength, szGlobalFeature);
+
+                    break;
+                }
             }
         }
+
+        CloseHandle(hFeatures);
     }
 
-    return -1;
+    return iBufLength;
 }
 
 stock void UpdatePremiumClientInfo(int iClient) {
-    char szAuth[32], szName[MAX_NAME_LENGTH], szQuery[PLATFORM_MAX_PATH];
+    char szAuth[MAX_AUTHID_LENGTH], szName[MAX_NAME_LENGTH], szQuery[PLATFORM_MAX_PATH];
     
     GetClientName(iClient, szName, sizeof szName);
     GetClientAuthId(iClient, AuthId_Steam2, szAuth, sizeof szAuth);
 
-    char szEscapedName[PLATFORM_MAX_PATH];
+    char szEscapedName[MAX_NAME_LENGTH];
     SQL_EscapeString(g_hDatabase, szName, szEscapedName, sizeof szEscapedName);
 
     FormatEx(szQuery, sizeof szQuery, "UPDATE `%s_users` SET `player_name` = '%s', `jointime` = '%i' WHERE `player_auth` = '%s'", g_szTablePrefix, szEscapedName, GetTime(), szAuth);
@@ -310,13 +320,13 @@ stock DatabaseType CORE_GetDatabaseType() {
 
     g_hDatabase.Driver.GetIdentifier(szDriver, sizeof szDriver);
 
-    return StrEqual(szDriver, "mysql") ? MYSQL : SQL;
+    return StrEqual(szDriver, "mysql") ? DB_TYPE_MYSQL : DB_TYPE_SQL;
 }
 
 stock int CORE_GetClientByAuth(const char[] szAuth) {
     for(int iClient = 1; iClient <= MaxClients; iClient++) {
         if(CORE_IsValidClient(iClient)) {
-            char szClientAuth[32];
+            char szClientAuth[MAX_AUTHID_LENGTH];
             GetClientAuthId(iClient, AuthId_Steam2, szClientAuth, sizeof szClientAuth);
             
             if(!strcmp(szClientAuth, szAuth)) return iClient;
@@ -418,7 +428,7 @@ stock bool CORE_RemoveClientAccess(char[] szAuth, int iAdmin = 0, const char[] s
     DBResultSet hResults = SQL_Query(g_hDatabase, szQuery);
     SQL_UnlockDatabase(g_hDatabase);
     
-    char szAdminAuth[32], szName[2][MAX_NAME_LENGTH];
+    char szAdminAuth[MAX_AUTHID_LENGTH], szName[2][MAX_NAME_LENGTH];
 
     int iTarget = CORE_GetClientByAuth(szAuth);
 
@@ -462,17 +472,17 @@ stock int CORE_FormatAccessTime(int iClient, int iTime, char[] szBuffer, int iMa
     char szPath[PLATFORM_MAX_PATH];
     BuildPath(Path_SM, szPath, sizeof szPath, TIMES_PATH);
 
-    if(g_hConfigs[TIMES] != INVALID_HANDLE)
-        delete g_hConfigs[TIMES];
+    if(g_hConfigs[CONFIG_TIMES] != INVALID_HANDLE)
+        delete g_hConfigs[CONFIG_TIMES];
     
-    g_hConfigs[TIMES] = CreateKeyValues("Times");
+    g_hConfigs[CONFIG_TIMES] = CreateKeyValues("Times");
 
-    if(!FileToKeyValues(g_hConfigs[TIMES], szPath))
+    if(!FileToKeyValues(g_hConfigs[CONFIG_TIMES], szPath))
         SetFailState("Failed to load configuration file with times: %s", szPath);
 
-    KvRewind(g_hConfigs[TIMES]);
+    KvRewind(g_hConfigs[CONFIG_TIMES]);
 
-    if(KvGotoFirstSubKey(g_hConfigs[TIMES])) {
+    if(KvGotoFirstSubKey(g_hConfigs[CONFIG_TIMES])) {
         char szValue[PLATFORM_MAX_PATH], szSection[32], szLang[2][10];
 
         GetLanguageInfo(GetServerLanguage(), szLang[0], sizeof szLang[]);
@@ -481,15 +491,15 @@ stock int CORE_FormatAccessTime(int iClient, int iTime, char[] szBuffer, int iMa
         else GetLanguageInfo(GetServerLanguage(), szLang[1], sizeof szLang[]);
 
         do {
-            KvGetSectionName(g_hConfigs[TIMES], szSection, sizeof szSection);
-            KvGetString(g_hConfigs[TIMES], szLang[1], szValue, sizeof szValue, "LangError");
+            KvGetSectionName(g_hConfigs[CONFIG_TIMES], szSection, sizeof szSection);
+            KvGetString(g_hConfigs[CONFIG_TIMES], szLang[1], szValue, sizeof szValue, "LangError");
 
             if(!strlen(szValue))
-                KvGetString(g_hConfigs[TIMES], szLang[0], szValue, sizeof szValue, "LangError");
+                KvGetString(g_hConfigs[CONFIG_TIMES], szLang[0], szValue, sizeof szValue, "LangError");
 
             if(StringToInt(szSection) == iTime)
                 strcopy(szBuffer, iMaxLength, szValue);
-        }while(KvGotoNextKey(g_hConfigs[TIMES], false));
+        }while(KvGotoNextKey(g_hConfigs[CONFIG_TIMES], false));
     }
 
     return strlen(szBuffer);
@@ -535,7 +545,7 @@ stock bool CORE_IsValidFeature(const char[] szFeature, const char[] szGroup) {
     StringMap hFeatures;
 
     if(GetTrieValue(g_hGroups, szGroup, hFeatures)) {
-        char szValue[32];
+        char szValue[PLATFORM_MAX_PATH];
         if(GetTrieString(hFeatures, szFeature, szValue, sizeof szValue)) return true;
 
         return false;
@@ -564,7 +574,7 @@ stock bool CORE_GetFeatureStatus(const char[] szFeature, const char[] szGroup) {
 
 stock bool CORE_GetClientFeatureStatus(int iClient, const char[] szFeature) {
     bool bIsEnabled = false;
-    char szAuth[32], szEscapedFeature[64], szQuery[PLATFORM_MAX_PATH];
+    char szAuth[MAX_AUTHID_LENGTH], szEscapedFeature[MAX_FEATURE_LENGTH], szQuery[PLATFORM_MAX_PATH];
     GetClientAuthId(iClient, AuthId_Steam2, szAuth, sizeof szAuth);
 
     SQL_EscapeString(g_hDatabase, szFeature, szEscapedFeature, sizeof szEscapedFeature);
@@ -583,7 +593,7 @@ stock bool CORE_GetClientFeatureStatus(int iClient, const char[] szFeature) {
 }
 
 stock void CORE_SetClientFeatureStatus(int iClient, const char[] szFeature, bool bIsEnabled) {
-    char szAuth[32], szEscapedFeature[64], szQuery[PLATFORM_MAX_PATH];
+    char szAuth[MAX_AUTHID_LENGTH], szEscapedFeature[MAX_FEATURE_LENGTH], szQuery[PLATFORM_MAX_PATH];
     GetClientAuthId(iClient, AuthId_Steam2, szAuth, sizeof szAuth);
 
     SQL_EscapeString(g_hDatabase, szFeature, szEscapedFeature, sizeof szEscapedFeature);
@@ -595,7 +605,7 @@ stock void CORE_SetClientFeatureStatus(int iClient, const char[] szFeature, bool
 }
 
 stock int CORE_GetClientExpires(int iClient) {
-    char szAuth[32], szQuery[PLATFORM_MAX_PATH];
+    char szAuth[MAX_AUTHID_LENGTH], szQuery[PLATFORM_MAX_PATH];
 
     GetClientAuthId(iClient, AuthId_Steam2, szAuth, sizeof szAuth);
     FormatEx(szQuery, sizeof szQuery, "SELECT `expires` FROM `%s_users` WHERE `player_auth` = '%s'", g_szTablePrefix, szAuth);
@@ -615,7 +625,7 @@ stock int CORE_GetClientExpires(int iClient) {
 }
 
 stock int CORE_GetClientGroup(int iClient, char[] szBuffer, int iMaxLength) {
-    char szAuth[32], szQuery[PLATFORM_MAX_PATH];
+    char szAuth[MAX_AUTHID_LENGTH], szQuery[PLATFORM_MAX_PATH];
 
     GetClientAuthId(iClient, AuthId_Steam2, szAuth, sizeof szAuth);
     FormatEx(szQuery, sizeof szQuery, "SELECT `group` FROM `%s_users` WHERE `player_auth` = '%s'", g_szTablePrefix, szAuth);
@@ -633,7 +643,7 @@ stock int CORE_GetClientGroup(int iClient, char[] szBuffer, int iMaxLength) {
 }
 
 stock void CORE_SetClientGroup(int iClient, const char[] szGroup) {
-    char szAuth[32], szQuery[PLATFORM_MAX_PATH];
+    char szAuth[MAX_AUTHID_LENGTH], szQuery[PLATFORM_MAX_PATH];
 
     GetClientAuthId(iClient, AuthId_Steam2, szAuth, sizeof szAuth);
     FormatEx(szQuery, sizeof szQuery, "UPDATE `%s_users` SET `group` = '%s' WHERE `player_auth` = '%s'", g_szTablePrefix, szGroup, szAuth);
@@ -712,30 +722,30 @@ stock int CORE_UnregisterFeature(const char[] szFeature) {
 stock bool CORE_IsAllowedFirstRound(const char[] szFeature) {
     bool bIsAllowed = true;
     
-    char szMap[128];
+    char szMap[MAX_MAP_LENGTH];
     GetCurrentMap(szMap, sizeof szMap);
 
     char szPath[PLATFORM_MAX_PATH];
     BuildPath(Path_SM, szPath, sizeof szPath, CONFIG_PATH);
 
-    if(g_hConfigs[MAIN] != INVALID_HANDLE)
-        delete g_hConfigs[MAIN];
+    if(g_hConfigs[CONFIG_MAIN] != INVALID_HANDLE)
+        delete g_hConfigs[CONFIG_MAIN];
     
-    g_hConfigs[MAIN] = CreateKeyValues("Premium");
+    g_hConfigs[CONFIG_MAIN] = CreateKeyValues("Premium");
 
-    if(!FileToKeyValues(g_hConfigs[MAIN], szPath))
+    if(!FileToKeyValues(g_hConfigs[CONFIG_MAIN], szPath))
         SetFailState("Failed to load the main configuration file of the plugin: %s", szPath);
     
-    KvRewind(g_hConfigs[MAIN]);
+    KvRewind(g_hConfigs[CONFIG_MAIN]);
 
-    if(KvJumpToKey(g_hConfigs[MAIN], "FirstRounds")) {
+    if(KvJumpToKey(g_hConfigs[CONFIG_MAIN], "FirstRounds")) {
         char szMapsList[1024];
-        KvGetString(g_hConfigs[MAIN], szFeature, szMapsList, sizeof szMapsList);
+        KvGetString(g_hConfigs[CONFIG_MAIN], szFeature, szMapsList, sizeof szMapsList);
 
         if(!strlen(szMapsList))
             return true;
         
-        char szMaps[32][128];
+        char szMaps[MAX_CONFIG_MAPS][MAX_MAP_LENGTH];
         int iMapsCount = ExplodeString(szMapsList, ";", szMaps, sizeof szMaps, sizeof szMaps[]);
 
         for(int i = 0; i < iMapsCount; i++) {
@@ -753,30 +763,30 @@ stock bool CORE_IsAllowedFirstRound(const char[] szFeature) {
 stock bool CORE_IsAllowedFeature(const char[] szFeature) {
     bool bIsAllowed = true;
     
-    char szMap[128];
+    char szMap[MAX_MAP_LENGTH];
     GetCurrentMap(szMap, sizeof szMap);
 
     char szPath[PLATFORM_MAX_PATH];
     BuildPath(Path_SM, szPath, sizeof szPath, CONFIG_PATH);
 
-    if(g_hConfigs[MAIN] != INVALID_HANDLE)
-        delete g_hConfigs[MAIN];
+    if(g_hConfigs[CONFIG_MAIN] != INVALID_HANDLE)
+        delete g_hConfigs[CONFIG_MAIN];
     
-    g_hConfigs[MAIN] = CreateKeyValues("Premium");
+    g_hConfigs[CONFIG_MAIN] = CreateKeyValues("Premium");
 
-    if(!FileToKeyValues(g_hConfigs[MAIN], szPath))
+    if(!FileToKeyValues(g_hConfigs[CONFIG_MAIN], szPath))
         SetFailState("Failed to load the main configuration file of the plugin: %s", szPath);
     
-    KvRewind(g_hConfigs[MAIN]);
+    KvRewind(g_hConfigs[CONFIG_MAIN]);
 
-    if(KvJumpToKey(g_hConfigs[MAIN], "Blockedmaps")) {
+    if(KvJumpToKey(g_hConfigs[CONFIG_MAIN], "Blockedmaps")) {
         char szMapsList[1024];
-        KvGetString(g_hConfigs[MAIN], szFeature, szMapsList, sizeof szMapsList);
+        KvGetString(g_hConfigs[CONFIG_MAIN], szFeature, szMapsList, sizeof szMapsList);
 
         if(!strlen(szMapsList))
             return true;
         
-        char szMaps[32][128];
+        char szMaps[MAX_CONFIG_MAPS][MAX_MAP_LENGTH];
         int iMapsCount = ExplodeString(szMapsList, ";", szMaps, sizeof szMaps, sizeof szMaps[]);
 
         for(int i = 0; i < iMapsCount; i++) {
@@ -799,10 +809,10 @@ stock bool CORE_IsValidGroup(const char[] szGroup) {
 }
 
 stock int CORE_GetFeatureValue(int iClient, char[] szFeature, char[] szBuffer, int iMaxLength) {
-    int iBufLength = 0;
+    int iBufLength = -1;
     
     if(CORE_IsValidClient(iClient)) {
-        char szGroup[GROUP_MAX_LENGTH];
+        char szGroup[MAX_GROUP_LENGTH];
         CORE_GetClientGroup(iClient, szGroup, sizeof szGroup);
 
         StringMap hFeatures;
@@ -815,4 +825,42 @@ stock int CORE_GetFeatureValue(int iClient, char[] szFeature, char[] szBuffer, i
     }
 
     return iBufLength;
+}
+
+stock void ClearGroups() {
+    char szGroup[MAX_GROUP_LENGTH];
+    Handle hGroups = CreateTrieSnapshot(g_hGroups);
+    int iGroupsCount = TrieSnapshotLength(hGroups);
+
+    for(int i = 0; i < iGroupsCount; i++) {
+        GetTrieSnapshotKey(hGroups, i, szGroup, sizeof szGroup);
+
+        StringMap hFeatures;
+        GetTrieValue(g_hGroups, szGroup, hFeatures);
+
+        if(hFeatures != INVALID_HANDLE)
+            delete hFeatures;
+    }
+
+    delete hGroups;
+    delete g_hGroups;
+}
+
+stock void ClearFeatures() {
+    char szFeature[MAX_FEATURE_LENGTH];
+    Handle hFeatures = CreateTrieSnapshot(g_hFeatures);
+    int iFeaturesCount = TrieSnapshotLength(hFeatures);
+
+    for(int i = 0; i < iFeaturesCount; i++) {
+        GetTrieSnapshotKey(hFeatures, i, szFeature, sizeof szFeature);
+
+        DataPack hPack;
+        GetTrieValue(g_hFeatures, szFeature, hPack);
+
+        if(hPack != INVALID_HANDLE)
+            delete hPack;
+    }
+
+    delete hFeatures;
+    delete g_hFeatures;
 }

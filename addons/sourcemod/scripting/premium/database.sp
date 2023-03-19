@@ -101,7 +101,7 @@ public void SQL_CallBack_FetchPremiumUsers(Database hDatabase, DBResultSet hResu
     }
 
     while(SQL_FetchRow(hResults)) {
-        char szAuth[32];
+        char szAuth[MAX_AUTHID_LENGTH];
 
         int iExpires = SQL_FetchInt(hResults, 8);
         SQL_FetchString(hResults, 3, szAuth, sizeof szAuth);
@@ -134,7 +134,7 @@ public void SQL_CallBack_ShowPremiumClients(Database hDatabase, DBResultSet hRes
     SetMenuTitle(hMenu, "%T\n ", "Titles_SelectClient", iClient);
 
     while(SQL_FetchRow(hResults)) {
-        char szAuth[32];
+        char szAuth[MAX_AUTHID_LENGTH];
         SQL_FetchString(hResults, 3, szAuth, sizeof szAuth);
 
         char szName[MAX_NAME_LENGTH];
@@ -168,13 +168,13 @@ public void SQL_CallBack_ShowClientInfo(Database hDatabase, DBResultSet hResults
     if(SQL_FetchRow(hResults)) {
         Menu hMenu = CreateMenu(CallBack_ShowClientInfo);
 
-        char szGroup[32];
+        char szGroup[MAX_GROUP_LENGTH];
         SQL_FetchString(hResults, 1, szGroup, sizeof szGroup);
 
         char szName[MAX_NAME_LENGTH];
         SQL_FetchString(hResults, 2, szName, sizeof szName);
 
-        char szAuth[32];
+        char szAuth[MAX_AUTHID_LENGTH];
         SQL_FetchString(hResults, 3, szAuth, sizeof szAuth);
 
         char szTime[PLATFORM_MAX_PATH];
@@ -209,8 +209,9 @@ public void SQL_CallBack_ShowClientInfo(Database hDatabase, DBResultSet hResults
         DisplayMenu(hMenu, iClient, MENU_TIME_FOREVER);
     }else{
         char szBuffer[PLATFORM_MAX_PATH];
-
         FormatEx(szBuffer, sizeof szBuffer, "%T", "Messages_ErrorGetClientInfo", iClient, iClient);
+
+        CORE_PrintToChat(iClient, szBuffer);
     }
 }
 

@@ -56,7 +56,10 @@ public void OnPluginStart() {
 
 public void OnPluginEnd() {
     delete g_hMenu;
+    delete g_hTimer;
     delete g_hAdminMenu;
+
+    ClearFeatures();
     
     g_bIsReady = false;
 }
@@ -71,7 +74,7 @@ public void OnMapStart() {
 }
 
 public void OnMapEnd() {
-    delete g_hGroups;
+    ClearGroups();
 }
 
 public void OnLibraryRemoved(const char[] szName) {
