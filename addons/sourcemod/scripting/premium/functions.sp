@@ -467,7 +467,7 @@ stock int CORE_FormatAccessTime(int iClient, int iTime, char[] szBuffer, int iMa
     
     g_hConfigs[TIMES] = CreateKeyValues("Times");
 
-    if(!FileToKeyValues(g_hClientData[TIMES], szPath))
+    if(!FileToKeyValues(g_hConfigs[TIMES], szPath))
         SetFailState("Failed to load configuration file with times: %s", szPath);
 
     KvRewind(g_hConfigs[TIMES]);

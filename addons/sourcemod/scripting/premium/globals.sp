@@ -6,7 +6,7 @@
 #define PLUGIN_NAME "[Premium] Core"
 #define PLUGIN_AUTHOR "xyligan"
 #define PLUGIN_DESCRIPTION "Ядро для выдачи привилегированного доступа игрокам"
-#define PLUGIN_VERSION "1.1.2"
+#define PLUGIN_VERSION "1.1.3-dev.1679232743"
 #define PLUGIN_URL "https://csdevs.net"
 
 #define CHARSET "utf8mb4_general_ci"
