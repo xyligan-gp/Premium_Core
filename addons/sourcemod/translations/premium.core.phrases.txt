@@ -1,0 +1,395 @@
+"Phrases"
+{
+	"ChatPrefix"
+	{
+		"en"		"[Premium]"
+		"ru"		"[Premium]"
+		"ua"		"[Premium]"
+	}
+
+	"Titles_Admin_Premium"
+	{
+		"en"		"[Premium] Management:"
+		"ru"		"[Premium] Управление:"
+		"ua"		"[Premium] Керування:"
+	}
+
+	"Titles_SelectClient"
+	{
+		"en"		"[Premium] Select Player:"
+		"ru"		"[Premium] Выберите игрока:"
+		"ua"		"[Premium] Виберіть гравця:"
+	}
+
+	"Titles_SelectTime"
+	{
+		"en"		"[Premium] Select time:"
+		"ru"		"[Premium] Выберите срок:"
+		"ua"		"[Premium] Виберіть термін:"
+	}
+
+	"Titles_SelectGroup"
+	{
+		"en"		"[Premium] Select group:"
+		"ru"		"[Premium] Выберите группу:"
+		"ua"		"[Premium] Виберіть группу:"
+	}
+
+	"Titles_SelectAction"
+	{
+		"en"		"[Premium] Select action:"
+		"ru"		"[Premium] Выберите действие:"
+		"ua"		"[Premium] Виберіть дію:"
+	}
+
+	"Titles_ClientInfo"
+	{
+		"#format"	"{1:s},{2:s},{3:s},{4:s}"
+
+		"en"		"[Premium] Player information:\n \nPlayer nickname: {1}\nPlayer status {2}\nPremium Group: {3}\nExpires: {4}"
+		"ru"		"[Premium] Информация об игроке:\n \nНик игрока: {1}\nСтатус игрока: {2}\nPremium-группа: {3}\nИстекает: {4}"
+		"ua"		"[Premium] Інформація про гравця:\n \nНік гравця: {1}\nСтатус гравця: {2}\nPremium-група: {3}\nСпливає: {4}"
+	}
+
+	"Items_ChangeExpires"
+	{
+		"en"		"Change access period"
+		"ru"		"Изменить срок доступа"
+		"ua"		"Змінити термін доступу"
+	}
+
+	"Titles_Premium"
+	{
+		"en"		"[Premium] Main Menu:"
+		"ru"		"[Premium] Главное меню:"
+		"ua"		"[Premium] Головне меню:"
+	}
+
+	"Items_Admin_Premium"
+	{
+		"en"		"Premium Management"
+		"ru"		"Управление Premium"
+		"ua"		"Керування Premium"
+	}
+
+	"Items_GiveAccess"
+	{
+
+		"en"		"Add Premium-Player"
+		"ru"		"Добавить Premium игрока"
+		"ua"		"Додати Premium гравця"
+	}
+
+	"Items_ShowClients"
+	{
+		"en"		"Premium players list"
+		"ru"		"Список Premium игроков"
+		"ua"		"Список Premium гравців"
+	}
+
+	"Items_RemoveAccess"
+	{
+		"en"		"Delete Premium player"
+		"ru"		"Удалить Premium игрока"
+		"ua"		"Видалити Premium гравця"
+	}
+
+	"Items_ChangeGroup"
+	{
+		"en"		"Update Premium group"
+		"ru"		"Изменить Premium группу"
+		"ua"		"Змінити Premium групу"
+	}
+
+	"Items_SetExpireTime"
+	{
+		"en"		"Set expire time"
+		"ru"		"Установить срок доступа"
+		"ua"		"Встановить срок доступу"
+	}
+
+	"Items_AddExpireTime"
+	{
+		"en"		"Add expire time"
+		"ru"		"Добавить время доступа"
+		"ua"		"Додати час доступу"
+	}
+
+	"Items_TakeExpireTime"
+	{
+		"en"		"Take expire time"
+		"ru"		"Отнять время доступа"
+		"ua"		"Відняти час доступу"
+	}
+
+	"Items_RestartConfig"
+	{
+		"en"		"Reload configuration"
+		"ru"		"Перезагрузить конфигурацию"
+		"ua"		"Перезавантажити конфігурацію"
+	}
+
+	"Items_ManageDatabase"
+	{
+		"en"		"Database management"
+		"ru"		"Управление БД"
+		"ua"		"Керування БД"
+	}
+
+	"Items_CleanUsers"
+	{
+		"en"		"Clean Premium users"
+		"ru"		"Очистить Premium пользователей"
+		"ua"		"Очистити Premium користувачів"
+	}
+
+	"Items_CleanSettings"
+	{
+		"en"		"Clean users preferences"
+		"ru"		"Очистить пользовательские настройки"
+		"ua"		"Очистити налаштування користувача"
+	}
+
+	"Messages_GiveAccess"
+	{
+		"#format"	"{1:N},{2:N},{3:s},{4:s}"
+
+		"en"		"{1}, the administrator {2} gave you the Premium Group '{3}' for {4}!"
+		"ru"		"{1}, администратор {2} выдал Вам Premium-группу '{3}' на {4}!"
+		"ua"		"{1}, адміністратор {2} видав Вам Premium-групу '{3}' на {4}!"
+	}
+
+	"Messages_GiveAccessAdmin"
+	{
+		"#format"	"{1:N},{2:s},{3:N},{4:s}"
+
+		"en"		"{1}, Premium Group '{2}' has been successfully issued to player {3} on {4}!"
+		"ru"		"{1}, Premium-группа '{2}' успешно выдана игроку {3} на {4}!"
+		"ua"		"{1}, Premium-групу '{2}' успішно видано гравцеві {3} на {4}!"
+	}
+
+	"Messages_RemoveAccess"
+	{
+		"#format"	"{1:N},{2:N}"
+
+		"en"		"{1}, the administrator {2} has taken away your Premium access!"
+		"ru"		"{1}, администратор {2} отнял у Вас Premium доступ!"
+		"ua"		"{1}, адміністратор {2} відібрав у Вас Premium доступ!"
+	}
+
+	"Messages_RemoveAccessAdmin"
+	{
+		"#format"	"{1:N},{2:s}"
+
+		"en"		"{1}, you have successfully removed Premium access from player {2}!"
+		"ru"		"{1}, Вы успешно удалили Premium доступ у игрока {2}!"
+		"ua"		"{1}, Ви успішно видалили Premium доступ у гравця {2}!"
+	}
+
+	"Messages_ErrorGetClientInfo"
+	{
+		"#format"	"{1:N}"
+
+		"en"		"{1}, failed to get information about the player!"
+		"ru"		"{1}, не удалось получить информацию об игроке!"
+		"ua"		"{1}, не вдалося отримати інформацію про гравця!"
+	}
+
+	"Messages_ReloadConfig"
+	{
+		"en"		"Premium configuration successfully reloaded!"
+		"ru"		"Конфигурация Premium успешно перезагружена!"
+		"ua"		"Конфігурацію Premium успішно перезавантажено!"
+	}
+
+	"Messages_DatabaseActionExecuted"
+	{
+		"en"		"The operation with the database has been successfully completed!"
+		"ru"		"Операция с БД успешно выполнена!"
+		"ua"		"Операція з БД успішно виконана!"
+	}
+
+	"Messages_ChangeClientGroup"
+	{
+		"#format"	"{1:N},{2:s}"
+
+		"en"		"Administrator {1} has changed your Premium Group to: '{2}'!"
+		"ru"		"Администратор {1} изменил Вашу Premium-группу на: '{2}'!"
+		"ua"		"Адміністратор {1} змінив Вашу Premium-групу на: '{2}'!"
+	}
+
+	"Messages_ChangeClientGroupAdmin"
+	{
+		"#format"	"{1:N},{2:s},{3:s}"
+
+		"en"		""
+		"ru"		"{1}, Вы успешно изменили группу игрока {2} на: '{3}'!"
+		"ua"		""
+	}
+
+	"Panels_HaveAccess"
+	{
+		"en"		"You have Premium access!\nDon't waste time, get set up and go to battle!"
+		"ru"		"У Вас имеется Premium-доступ!\nНе теряйте времени, выполните настройку и вперёд в бой!"
+		"ua"		"У Вас є Premium-доступ!\nНе гайте часу, виконайте налаштування і вперед у бій!"
+	}
+
+    "Panels_NoAccess"
+	{
+		"ru"		"У вас нет доступа к этому меню!\nЧтобы приобрести Premium-доступ\nОбратитесь к администратору сервера!"
+		"en"		"You do not have access to this menu!\nTo purchase Premium access\nContact your server administrator!"
+		"ua"		"У вас немає доступу до цього меню! Щоб придбати Premium-доступ, зверніться до адміністратора сервера!"
+	}
+
+    "Panels_GiveAccess"
+	{
+		"ru"		"Администратор сервера выдал Вам Premium-доступ!\nНе теряйте времени, выполните настройку и вперёд в бой!"
+		"en"		"The server administrator has given you Premium access!\nDo not waste time, complete the settings and go to battle!"
+		"ua"		"Адміністратор сервера видав Вам Premium-доступ! Не гайте часу, виконайте налаштування і вперед у бій!"
+	}
+
+	"Panels_RemoveAccess"
+	{
+		"en"		"The server administrator has taken away your Premium access!\nTo buy Premium access, please contact your server administrator!"
+		"ru"		"Администратор сервера отнял у Вас Premium-доступ!\nЧтобы приобрести Premium-доступ\nОбратитесь к администратору сервера!"
+		"ua"		"Адміністратор сервера забрав у Вас Premium-доступ!\nЩоб придбати Premium-доступ,\nЗверніться до адміністратора сервера!"
+	}
+
+    "Buttons_Exit"
+	{
+		"ru"		"Выход"
+		"en"		"Exit"
+		"ua"		"Вихід"
+	}
+
+	"NoClients"
+	{
+		"en"		"Players not found..."
+		"ru"		"Игроки не найдены..."
+		"ua"		"Гравців не знайдено..."
+	}
+
+	"NoItems"
+	{
+		"en"		"Items not found..."
+		"ru"		"Пункты не найдены..."
+		"ua"		"Пункти не знайдено..."
+	}
+
+	"NoFeatures"
+	{
+		"en"		"Features not found..."
+		"ru"		"Привилегии не найдены..."
+		"ua"		"Привілеї не знайдено..."
+	}
+
+	"NoGroups"
+	{
+		"en"		"Groups not found..."
+		"ru"		"Группы не найдены..."
+		"ua"		"Групи не знайдено..."
+	}
+
+	"Forever"
+	{
+		"en"		"Forever"
+		"ru"		"Никогда"
+		"ua"		"Ніколи"
+	}
+
+	"Status_Online"
+	{
+		"en"		"Online"
+		"ru"		"В игре (онлайн)"
+		"ua"		"У грі (онлайн)"
+	}
+
+	"Status_Offline"
+	{
+		"en"		"Offline"
+		"ru"		"Не в игре (оффлайн)"
+		"ua"		"Не у грі (офлайн)"
+	}
+
+	"AccessExpires"
+	{
+		"#format"	"{1:s}"
+		
+		"en"		"Expires: {1}"
+		"ru"		"Истекает: {1}"
+		"ua"		"Закінчується: {1}"
+	}
+
+	"ClientGroup"
+	{
+		"#format"	"{1:s}"
+
+		"en"		"Group: {1}"
+		"ru"		"Группа: {1}"
+		"ua"		"Група: {1}"
+	}
+
+	"TimeLeft_Years"
+    {
+        "#format"   "{1:d}"
+
+        "en"        "{1} years"
+        "ru"        "{1} г."
+    }
+
+    "TimeLeft_YearMonths"
+    {
+        "#format"   "{1:d},{2:d}"
+
+        "en"        "{1} years, {2} months"
+        "ru"        "{1} г., {2} мес."
+    }
+
+    "TimeLeft_Months"
+    {
+        "#format"   "{1:d}"
+
+        "en"        "{1} months"
+        "ru"        "{1} мес."
+    }
+
+    "TimeLeft_MonthDays"
+    {
+        "#format"   "{1:d},{2:d}"
+
+        "en"        "{1} months, {2} days"
+        "ru"        "{1} мес., {2} дн."
+    }
+
+    "TimeLeft_Days"
+    {
+        "#format"   "{1:d}"
+
+        "en"        "{1} days"
+        "ru"        "{1} дн."
+    }
+    
+    "TimeLeft_DayHours"
+    {
+        "#format"   "{1:d},{2:d}"
+
+        "en"        "{1} days, {2} hours"
+        "ru"        "{1} дн., {2} час."
+    }
+
+    "TimeLeft_Default"
+    {
+        "#format"   "{1:d},{2:d},{3:d}"
+
+        "en"        "{1} hours, {2} minutes, {3} seconds"
+        "ru"        "{1} час., {2} мин., {3} сек."
+    }
+
+    "TimeLeft_MinSecs"
+    {
+        "#format"   "{1:d},{2:d}"
+
+        "en"        "{1} minutes, {2} seconds"
+        "ru"        "{1} мин., {2} сек."
+    }
+}

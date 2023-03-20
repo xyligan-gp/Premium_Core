@@ -1,0 +1,140 @@
+"Phrases"
+{
+    // A
+    "Armor"
+    {
+        "en"    "Setup Armor"
+        "ru"    "Установка брони"
+        "ua"    "Встановлення броні"
+    }
+
+    // B 
+    "BunnyHop"
+	{
+		"en"    "BunnyHop"
+		"ru"    "БанниХоп"
+		"ua"    "БанніХоп"
+	} 
+
+    // C
+
+    // D
+
+    // E
+
+    // F
+
+    // G
+    "Gravity"
+    {
+        "en"    "Gravity"
+        "ru"    "Гравитации"
+        "ua"    "Гравітація"
+    }
+    "GrenadeTrails"
+    {
+        "en"    "Grenade Trails"
+        "ru"    "Трейлы гранат"
+        "ua"    "Сліди гранат"
+    }
+
+    // H
+    "Health"
+    {
+        "en"    "Setup Health"
+        "ru"    "Установка здоровья"
+        "ua"    "Встановлення здоров'я"
+    }
+
+    // I
+
+    // J
+
+    // K
+
+    // L
+
+    // M
+    "Money"
+    {
+        "en"    "Setting money"
+        "ru"    "Установка денег"
+        "ua"    "Встановлення грошей"
+    }
+
+    // N
+    "NVD"
+    {
+        "en"    "NightVision device"
+        "ru"    "Прибор ночного виденья"
+        "ua"    "Прилад нічного бачення"
+    }
+
+    // O
+
+    // P
+
+    // Q
+
+    // R
+    "RainbowPlayer"
+    {
+        "en"    "Rainbow Player"
+        "ru"    "Радужная модель"
+        "ua"    "Райдужна модель"
+    } 
+
+    // S
+    "SpawnProtection"
+    {
+        "en"    "Spawn Protection"
+        "ru"    "Защита при спавне"
+        "ua"    "Захист при спавні"
+    }
+
+    "SpawnProtectionEnabled"
+    {
+        "#format"   "{1:N},{2:i}"
+
+        "en"    ""
+        "ru"    "{1}, защита включена и будет действовать ещё {2} сек."
+        "ua"    ""
+    }
+
+    "SpawnProtectionDisabled"
+    {
+        "#format"   "{1:N}"
+
+        "en"    ""
+        "ru"    "{1}, защита отключена!"
+        "ua"    ""
+    }
+
+	"Speed"
+	{
+		"en"    "Speed"
+		"ru"    "Повышенная скорость"
+		"ua"    "Підвищена швидкість"
+	}
+
+    // T
+    "Tagrenade"
+    {
+        "en"    "WH-grenade"
+        "ru"    "ВХ-граната"
+        "ua"    "ВХ-граната"
+    }
+
+    // U
+
+    // V
+
+    // W
+
+    // X
+
+    // Y
+
+    // Z
+    
+}

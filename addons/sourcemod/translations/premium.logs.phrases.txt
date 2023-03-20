@@ -1,0 +1,83 @@
+"Phrases"
+{
+    "PremiumLog_GiveAccess"
+    {
+        "#format"   "{1:s},{2:s},{3:s},{4:s},{5:s},{6:s}"
+
+        "en"        "Administrator {1} ({2}) granted Premium access to player {3} ({4}) [Group: {5} | Time: {6}]"
+        "ru"        "Администратор {1} ({2}) выдал Premium-доступ игроку {3} ({4}) [Группа: {5} | Срок: {6}]"
+        "ua"        "Адміністратор {1} ({2}) видав Premium-доступ гравцю{3} ({4}) [Група: {5} | Термін: {6}]"
+    }
+
+    "PremiumLog_RemoveAccess"
+    {
+        "#format"   "{1:s},{2:s},{3:s},{4:s}"
+
+        "en"        "Administrator {1} ({2}) taked Premium access from player {3} ({4})!"
+        "ru"        "Администратор {1} ({2}) забрал Premium-доступ у игрока {3} ({4})!"
+        "ua"        "Адміністратор {1} ({2}) забрав Premium-доступ у гравця {3} ({4})!"
+    }
+
+    "PremiumLog_ReloadConfiguration"
+    {
+        "#format"   "{1:s},{2:s}"
+
+        "en"        "Administrator {1} ({2}) has reset the Premium configuration!"
+        "ru"        "Администратор {1} ({2}) выполнил перезагрузку конфигурации Premium!"
+        "ua"        "Адміністратор {1} ({2}) виконав перезавантаження конфігурації Premium!"
+    }
+
+    "PremiumLog_ClearPremiumUsersPreferences"
+    {
+        "#format"   "{1:s},{2:s}"
+
+        "en"        "Administrator {1} ({2}) has cleared the custom Premium players settings!"
+        "ru"        "Администратор {1} ({2}) выполнил очистку пользовательских настроек Premium игроков!"
+        "ua"        "Адміністратор {1} ({2}) виконав очищення користувацьких налаштувань Premium гравців!"
+    }
+
+    "PremiumLog_ClearPremiumUsers"
+    {
+        "#format"   "{1:s},{2:s}"
+
+        "en"        "Administrator {1} ({2}) has cleared Premium players!"
+        "ru"        "Администратор {1} ({2}) выполнил очистку Premium игроков!"
+        "ua"        "Адміністратор {1} ({2}) виконав очищення Premium гравців!"
+    }
+
+    "PremiumLog_SetPremiumExpires"
+    {
+        "#format"   "{1:s},{2:s},{3:s},{4:s},{5:s}"
+
+        "en"        "Administrator {1} ({2}) has set a Premium access term for player {3} ({4}) to: {5}"
+        "ru"        "Администратор {1} ({2}) выполнил установку срока Premium-доступа для игрока {3} ({4}) на: {5}"
+        "ua"        "Адміністратор {1} ({2}) виконав встановлення терміну Premium-доступу для гравця {3} ({4}) на: {5}"
+    }
+
+    "PremiumLog_AddPremiumExpires"
+    {
+        "#format"   "{1:s},{2:s},{3:s},{4:s},{5:s},{6:s}"
+
+        "en"        "Administrator {1} ({2}) added '{5}' to the term of Premium access for player {3} ({4}) [Premium access to: {6}]"
+        "ru"        "Администратор {1} ({2}) добавил '{5}' к сроку Premium-доступа игрока {3} ({4}) [Premium-доступ до: {6}]"
+        "ua"        "Адміністратор {1} ({2}) додав '{5}' до терміну Premium-доступу гравця {3} ({4}) [Premium-доступ до: {6}]"
+    }
+
+    "PremiumLog_TakePremiumExpires"
+    {
+        "#format"   "{1:s},{2:s},{3:s},{4:s},{5:s},{6:s}"
+
+        "en"        "Administrator {1} ({2}) has taken '{5}' away from the term of Premium access for player {3} ({4}) [Premium access to: {6}]"
+        "ru"        "Администратор {1} ({2}) отнял '{5}' от срока Premium-доступа игрока {3} ({4}) [Premium-доступ до: {6}]"
+        "ua"        "Адміністратор {1} ({2}) відняв '{5}' від терміну Premium-доступу гравця {3} ({4}) [Premium-доступ до: {6}]"
+    }
+
+    "PremiumLog_ChangeClientGroup"
+    {
+        "#format"   "{1:s},{2:s},{3:s},{4:s},{5:s}"
+
+        "en"        "Administrator {1} ({2}) changed player {3} ({4}) Premium group to: '{5}'"
+        "ru"        "Администратор {1} ({2}) изменил Premium-группу игрока {3} ({4}) на: '{5}'"
+        "ua"        "Адміністратор {1} ({2}) змінив Premium-групу гравця {3} ({4}) на: '{5}'"
+    }
+}
